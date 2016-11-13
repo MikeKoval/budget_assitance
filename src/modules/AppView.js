@@ -1,66 +1,97 @@
-import React, {PropTypes} from 'react';
-import {View, StyleSheet, ActivityIndicator} from 'react-native';
-import NavigationViewContainer from './navigation/NavigationViewContainer';
-import * as auth0 from '../services/auth0';
-import * as snapshotUtil from '../utils/snapshot';
-import * as SessionStateActions from '../modules/session/SessionState';
-import store from '../redux/store';
-import DeveloperMenu from '../components/DeveloperMenu';
+import React, {PropTypes, Component} from 'react';
+import { Navigator, DrawerLayoutAndroid, ScrollView, View, Text } from 'react-native';
 
-const AppView = React.createClass({
-  propTypes: {
-    isReady: PropTypes.bool.isRequired,
-    isLoggedIn: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired
-  },
-  componentDidMount() {
-    snapshotUtil.resetSnapshot()
-      .then(snapshot => {
-        const {dispatch} = this.props;
+import Navigate from '../utils/Navigate';
+import Toolbar from '../components/Toolbar';
+import Navigation from '../scenes/Navigation';
 
-        if (snapshot) {
-          dispatch(SessionStateActions.resetSessionStateFromSnapshot(snapshot));
-        } else {
-          dispatch(SessionStateActions.initializeSessionState());
-        }
+class Application extends Component {
+  static propTypes = {};
 
-        store.subscribe(() => {
-          snapshotUtil.saveSnapshot(store.getState());
-        });
-      });
-  },
+  static childContextTypes = {
+    drawer: PropTypes.object,
+    navigator: PropTypes.object
+  };
 
-  componentWillReceiveProps({isReady, isLoggedIn}) {
-    if (!this.props.isReady) {
-      if (isReady && !isLoggedIn) {
-        auth0.showLogin();
-      }
+  constructor(props) {
+    super(props);
+    this.state = {
+      drawer: null,
+      navigator: null
+    };
+  }
+
+  getChildContext = () => {
+    return {
+      drawer: this.state.drawer,
+      navigator: this.state.navigator
     }
-  },
+  };
 
-  render() {
-    if (!this.props.isReady) {
-      return (
-        <View>
-          <ActivityIndicator style={styles.centered}/>
-        </View>
-      );
-    }
+  setDrawer = (drawer) => {
+    this.setState({
+      drawer
+    });
+  };
+
+  setNavigator = (navigator) => {
+    this.setState({
+      navigator: new Navigate(navigator)
+    });
+  };
+
+  render(){
+    const { drawer, navigator } = this.state;
+    const navView = React.createElement(Navigation);
+
+    const nav = (
+      <Navigator
+        ref={(navigator) => { !this.state.navigator ? this.setNavigator(navigator) : null }}
+        initialRoute={Navigate.getInitialRoute()}
+        navigationBar={<Toolbar onIconPress={drawer && drawer.openDrawer} />}
+        configureScene={() => {
+          return Navigator.SceneConfigs.FadeAndroid;
+        }}
+        renderScene={(route) => {
+          if (this.state.navigator && route.component) {
+            return (
+              <View
+                style={styles.scene}
+                showsVerticalScrollIndicator={false}>
+                <route.component title={route.title} path={route.path} {...route.props} />
+              </View>
+            );
+          }
+          else {
+            return <Text>Loading...</Text>;
+          }
+        }}
+      />
+    );
 
     return (
-      <View style={{flex: 1}}>
-        <NavigationViewContainer />
-        {__DEV__ && <DeveloperMenu />}
-      </View>
+      <DrawerLayoutAndroid
+        drawerWidth={300}
+        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        renderNavigationView={() => {
+          if (drawer && navigator) {
+            return navView;
+          }
+          return null;
+        }}
+        ref={(drawer) => { !this.state.drawer ? this.setDrawer(drawer) : null }}
+      >
+        {drawer && nav}
+      </DrawerLayoutAndroid>
     );
   }
-});
+}
 
-const styles = StyleSheet.create({
-  centered: {
+const styles = {
+  scene: {
     flex: 1,
-    alignSelf: 'center'
+    marginTop: 56
   }
-});
+};
 
-export default AppView;
+export default Application;

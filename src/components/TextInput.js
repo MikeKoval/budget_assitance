@@ -1,32 +1,50 @@
-import React, {PropTypes} from 'react';
+import React, {PropTypes, Component} from 'react';
 import {
-  TextInput
+  View,
+  TextInput,
+  Text,
+  StyleSheet
 } from 'react-native';
 
-const TextField = (props) => {
-  const {
-    style,
-    input: {value, onChange},
-    meta: {error, touched},
-    ...otherProps
-  } = props;
+class TextField extends Component {
+  static propTypes = {
+    style: PropTypes.object,
+    meta: PropTypes.object.isRequired,
+    input: PropTypes.object.isRequired
+  };
 
-  return (
-    <TextInput
-      // Let's only change the text color instead of showing error messages
-      style={(touched && error) ? [style, {color: 'red'}] : style}
-      underlineColorAndroid='transparent'
-      onChangeText={onChange}
-      value={value}
-      {...otherProps}
-    />
-  );
-};
+  render() {
+    const {
+      style,
+      input: {value, onChange},
+      meta: {error, touched},
+      label,
+      ...otherProps
+    } = this.props;
 
-TextField.propTypes = {
-  style: PropTypes.object,
-  meta: PropTypes.object.isRequired,
-  input: PropTypes.object.isRequired
-};
+    console.log('--props', this.props);
+
+    return (
+      <View>
+        {label && <Text style={(touched && error) ? [styles.label, {color: 'red'}] : styles.label}>{label}</Text>}
+        <TextInput
+          // Let's only change the text color instead of showing error messages
+          style={(touched && error) ? [style, styles.textInput, {color: 'red'}] : [styles.textInput, style]}
+          onChangeText={(value) => onChange(value)}
+          {...otherProps}
+        />
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  textInput: {
+    height: 40
+  },
+  label: {
+    marginTop: 10
+  }
+});
 
 export default TextField;

@@ -3,37 +3,72 @@ import {
   View,
   StyleSheet
 } from 'react-native';
+import {connect} from 'react-redux';
 import {Field, reduxForm} from 'redux-form';
 import TextInput from '../../components/TextInput';
-import {Button} from 'react-native-material-design';
+import {Button, Card} from 'react-native-material-design';
+
+import AppStore from '../../stores/AppStore';
+
+import AccountViewFormValidation from './AccountViewFormValidation';
 
 @reduxForm({
   form: 'loginForm',
-  touchOnChange: true
+  touchOnChange: true,
+  validate: AccountViewFormValidation
 })
+@connect(
+  state => ({
+    test: state.getIn(['form'])
+  })
+)
 class AccountView extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func.isRequired
   };
 
+  onSubmit(data) {
+    console.log('--data', data);
+  }
+
   render() {
-    const {handleSubmit} = this.props;
+    const {handleSubmit, valid} = this.props;
+
+    const theme = AppStore.getState().theme;
+
+    console.log('--this.props',this.props);
 
     return (
       <View style={styles.container}>
-        <Field
-          name='email'
-          component={TextInput}
-          placeholder='Email'
-        />
-        <Field
-          name='password'
-          component={TextInput}
-          placeholder='Password'
-          secureTextEntry={true}
+        <Card>
+          <Card.Body>
+            <Field
+              name='name'
+              component={TextInput}
+              label="Account name"
+              autoFocus
+            />
+            <Field
+              name='initialValue'
+              component={TextInput}
+              label="Initial value"
+              defaultValue={'0'}
+              keyboardType={'numeric'}
+            />
+            <Field
+              name='currency'
+              component={TextInput}
+              label="Currency"
+            />
+            <Field
+              name='color'
+              component={TextInput}
+              label="Select color"
+            />
+          </Card.Body>
+        </Card>
 
-        />
-        <Button text='Submit' raised onPress={handleSubmit} />
+        <Button text="Add" primary={theme} theme="dark" raised disabled={!valid} onPress={handleSubmit(props => this.onSubmit(props))} />
       </View>
     );
   }
@@ -42,7 +77,7 @@ class AccountView extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: '#eee'
   },
   centered: {
     flex: 1,
