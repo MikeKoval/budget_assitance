@@ -14,6 +14,9 @@ import java.util.List;
 
 import com.auth0.lock.react.LockReactPackage;
 
+import org.pgsqlite.SQLitePluginPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -26,7 +29,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-          new LockReactPackage()
+          new LockReactPackage(),
+          new SQLitePluginPackage(),
+          new VectorIconsPackage()
       );
     }
   };

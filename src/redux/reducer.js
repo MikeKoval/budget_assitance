@@ -1,23 +1,29 @@
 import {Map, fromJS} from 'immutable';
 import {loop, combineReducers} from 'redux-loop';
+
+import {reducer as form} from 'redux-form/immutable';
+
 import NavigationStateReducer from '../modules/navigation/NavigationState';
 import AuthStateReducer from '../modules/auth/AuthState';
-import CounterStateReducer from '../modules/counter/CounterState';
+import AccountsStateReducer from '../modules/accounts/AccountsState';
+import AccountStateReducer from '../modules/accounts/AccountState';
 import SessionStateReducer, {RESET_STATE} from '../modules/session/SessionState';
 
 const reducers = {
   // Authentication/login state
   auth: AuthStateReducer,
 
-  // Counter sample app state. This can be removed in a live application
-  counter: CounterStateReducer,
-
   // @NOTE: By convention, the navigation state must live in a subtree called
   //`navigationState`
   navigationState: NavigationStateReducer,
 
-  session: SessionStateReducer
+  session: SessionStateReducer,
 
+  accounts: AccountsStateReducer,
+
+  account: AccountStateReducer,
+
+  form
 };
 
 // initial state, accessor and mutator for supporting root-level
