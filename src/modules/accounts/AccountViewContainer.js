@@ -1,4 +1,12 @@
-// import {connect} from 'react-redux';
+import {connect} from 'react-redux';
 import AccountView from './AccountView';
+import {insert} from './AccountState';
 
-export default AccountView;
+export default connect(
+  state => ({}),
+  dispatch => ({
+    insert(item) {
+      dispatch(insert(item));
+    }
+  })
+)(AccountView);

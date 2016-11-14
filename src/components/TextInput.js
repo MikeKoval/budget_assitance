@@ -22,8 +22,6 @@ class TextField extends Component {
       ...otherProps
     } = this.props;
 
-    console.log('--props', this.props);
-
     return (
       <View>
         {label && <Text style={(touched && error) ? [styles.label, {color: 'red'}] : styles.label}>{label}</Text>}
@@ -31,6 +29,7 @@ class TextField extends Component {
           // Let's only change the text color instead of showing error messages
           style={(touched && error) ? [style, styles.textInput, {color: 'red'}] : [styles.textInput, style]}
           onChangeText={(value) => onChange(value)}
+          value={value}
           {...otherProps}
         />
       </View>

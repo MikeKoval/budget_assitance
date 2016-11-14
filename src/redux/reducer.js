@@ -1,7 +1,7 @@
 import {Map, fromJS} from 'immutable';
 import {loop, combineReducers} from 'redux-loop';
 
-import {reducer as form} from 'redux-form';
+import {reducer as formReducer} from 'redux-form/immutable';
 
 import NavigationStateReducer from '../modules/navigation/NavigationState';
 import AuthStateReducer from '../modules/auth/AuthState';
@@ -23,7 +23,7 @@ const reducers = {
 
   account: AccountStateReducer,
 
-  form
+  form: formReducer
 };
 
 // initial state, accessor and mutator for supporting root-level

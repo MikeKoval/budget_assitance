@@ -1,46 +1,45 @@
 import {Map} from 'immutable';
-// import {loop, Effects} from 'redux-loop';
-// import * as AccountsService from '../../services/AccountsService';
+import {loop, Effects} from 'redux-loop';
+import * as AccountsService from '../../services/AccountsService';
 
 // Initial state
 const initialState = Map({
-  loaded: false,
-  items: []
+  saved: false,
+  item: new Map([])
 });
-//
-// export async function getAllResponse(items) {
-//   return {
-//     type: GET_ACCOUNTS_RESPONSE,
-//     items
-//   };
-// }
-//
-// export async function getAll() {
-//   console.log('getAll');
-//   try {
-//     return getAllResponse(await AccountsService.list());
-//   } catch (error) {
-//     // return fetchDataErrorOptimistic(error);
-//   }
-// }
 
-// const GET_ACCOUNTS_REQUEST = 'AccountState/GET_ACCOUNTS_REQUEST';
-// const GET_ACCOUNTS_RESPONSE = 'AccountState/GET_ACCOUNTS_RESPONSE';
+export async function insertResponse(item) {
+  return {
+    type: INSERT_ACCOUNT_RESPONSE,
+    item
+  };
+}
+
+export async function insert(item) {
+  try {
+    return insertResponse(await AccountsService.insert(item));
+  } catch (error) {
+    // return fetchDataErrorOptimistic(error);
+  }
+}
+
+const INSERT_ACCOUNT_REQUEST = 'AccountState/INSERT_ACCOUNT_REQUEST';
+const INSERT_ACCOUNT_RESPONSE = 'AccountState/INSERT_ACCOUNT_RESPONSE';
 // const LOAD_ACCOUNTS = 'AccountsState/LOAD_ACCOUNTS';
 
 // Reducer
-export default function CounterStateReducer(state = initialState, action = {}) {
+export default function AccountStateReducer(state = initialState, action = {}) {
   switch (action.type) {
-    // case GET_ACCOUNTS_REQUEST:
-    //   return loop(
-    //     state.set('loaded', false),
-    //     Effects.promise(getAll)
-    //   );
-    //
-    // case GET_ACCOUNTS_RESPONSE:
-    //   return state
-    //     .set('items', action.items)
-    //     .set('loaded', true);
+    case INSERT_ACCOUNT_REQUEST:
+      return loop(
+        state.set('saved', false),
+        Effects.promise(insert, action.item)
+      );
+
+    case INSERT_ACCOUNT_RESPONSE:
+      return state
+        .set('item', action.item)
+        .set('saved', true);
 
     default:
       return state;

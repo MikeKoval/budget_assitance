@@ -3,8 +3,7 @@ import {
   View,
   StyleSheet
 } from 'react-native';
-import {connect} from 'react-redux';
-import {Field, reduxForm} from 'redux-form';
+import {Field, reduxForm} from 'redux-form/immutable';
 import TextInput from '../../components/TextInput';
 import {Button, Card} from 'react-native-material-design';
 
@@ -14,29 +13,22 @@ import AccountViewFormValidation from './AccountViewFormValidation';
 
 @reduxForm({
   form: 'loginForm',
-  touchOnChange: true,
   validate: AccountViewFormValidation
 })
-@connect(
-  state => ({
-    test: state.getIn(['form'])
-  })
-)
 class AccountView extends Component {
   static propTypes = {
-    handleSubmit: PropTypes.func.isRequired
+    handleSubmit: PropTypes.func.isRequired,
+    insert: PropTypes.func.isRequired,
   };
 
   onSubmit(data) {
-    console.log('--data', data);
+    this.props.insert(data);
   }
 
   render() {
     const {handleSubmit, valid} = this.props;
 
     const theme = AppStore.getState().theme;
-
-    console.log('--this.props',this.props);
 
     return (
       <View style={styles.container}>
