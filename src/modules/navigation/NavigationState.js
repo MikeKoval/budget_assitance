@@ -1,5 +1,3 @@
-import {fromJS} from 'immutable';
-
 import {NavigationExperimental} from 'react-native';
 
 const {StateUtils: NavigationStateUtils} = NavigationExperimental;
@@ -29,7 +27,7 @@ export function popRoute() {
 }
 
 // reducers for tabs and scenes are separate
-const initialState = fromJS({
+const initialState = {
   tabs: {
     index: 0,
     routes: [
@@ -40,16 +38,16 @@ const initialState = fromJS({
     index: 0,
     routes: [{key: 'Accounts', title: 'Accounts Screen'}]
   }
-});
+};
 
 export default function NavigationReducer(state = initialState, action) {
   switch (action.type) {
     case PUSH_ROUTE: {
       // Push a route into the scenes stack.
       const route = action.payload;
-      const tabs = state.get('tabs');
-      const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key');
-      const scenes = state.get(tabKey).toJS();
+      const tabs = state.tabs;
+      const tabKey = tabs.routes[tabs.index].key;
+      const scenes = state[tabKey];
       let nextScenes;
       // fixes issue #52
       // the try/catch block prevents throwing an error when the route's key pushed
@@ -60,29 +58,34 @@ export default function NavigationReducer(state = initialState, action) {
         nextScenes = scenes;
       }
       if (scenes !== nextScenes) {
-        return state.set(tabKey, fromJS(nextScenes));
+        state[tabKey] = nextScenes;
+        return state;
       }
       return state;
     }
 
     case POP_ROUTE: {
       // Pops a route from the scenes stack.
-      const tabs = state.get('tabs');
-      const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key');
-      const scenes = state.get(tabKey).toJS();
+      const tabs = state.tabs;
+      const tabKey = tabs.routes[tabs.index].key;
+      const scenes = state[tabKey];
       const nextScenes = NavigationStateUtils.pop(scenes);
       if (scenes !== nextScenes) {
-        return state.set(tabKey, fromJS(nextScenes));
+        state[tabKey] = nextScenes;
+        return state;
       }
       return state;
     }
 
     case SWITCH_TAB: {
       // Switches the tab.
-      const tabs = state.get('tabs').toJS();
+      const tabs = state.tabs;
       const nextTabs = NavigationStateUtils.jumpToIndex(tabs, action.payload);
       if (tabs !== nextTabs) {
-        return state.set('tabs', fromJS(nextTabs));
+        return {
+          ...state,
+          tabs: nextTabs
+        };
       }
       return state;
     }

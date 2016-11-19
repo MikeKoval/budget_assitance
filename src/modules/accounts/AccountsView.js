@@ -48,7 +48,7 @@ const CounterView = React.createClass({
         <ListView
           style={styles.container}
           dataSource={dataSource}
-          renderRow={(item) => <ListRow item={item} />}
+          renderRow={(item) => <ListRow item={item} />} //TODO refactor it
           enableEmptySections={true}
           refreshControl={refreshControl}
         />

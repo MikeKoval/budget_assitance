@@ -4,13 +4,13 @@ const t = {
 
 const validate = (values) => {
   const errors = {};
-  if (!values.get('name')) {
+  if (!values.name) {
     errors.name = t.required;
   }
-  if (!values.get('currency')) {
+  if (!values.currency) {
     errors.currency = t.required;
   }
-  if (!values.get('color')) {
+  if (!values.color) {
     errors.color = t.required;
   }
   return errors;

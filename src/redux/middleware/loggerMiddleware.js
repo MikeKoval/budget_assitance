@@ -8,11 +8,11 @@ export default createLogger({
   predicate: () => __DEV__,
 
   // transform immutable state to plain objects
-  stateTransformer: state => state.toJS(),
+  stateTransformer: state => state,
 
   // transform immutable action payloads to plain objects
   actionTransformer: action =>
-    action && action.payload && action.payload.toJS
-      ? {...action, payload: action.payload.toJS()}
+    action && action.payload
+      ? {...action, payload: action.payload}
       : action
 });

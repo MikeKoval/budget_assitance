@@ -3,8 +3,9 @@ import {
   View,
   StyleSheet
 } from 'react-native';
-import {Field, reduxForm} from 'redux-form/immutable';
+import {Field, reduxForm} from 'redux-form';
 import TextInput from '../../components/TextInput';
+import Picker from '../../components/Picker';
 import {Button, Card} from 'react-native-material-design';
 
 import AppStore from '../../stores/AppStore';
@@ -19,14 +20,31 @@ class AccountView extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func.isRequired,
     insert: PropTypes.func.isRequired,
+    getCurrencies: PropTypes.func.isRequired,
+    currencies: PropTypes.array.isRequired
   };
 
+  componentDidMount() {
+    console.log('mount');
+    this.props.getCurrencies();
+  }
+
+  componentWillMount() {
+    console.log('mount');
+    // this.props.getCurrencies();
+  }
+
   onSubmit(data) {
-    this.props.insert(data);
+    this.props.insert(data)
+      .then(() => {
+        alert('saved');
+      });
   }
 
   render() {
-    const {handleSubmit, valid} = this.props;
+    const {handleSubmit, valid, submitting, currencies} = this.props;
+
+    console.log(this.props);
 
     const theme = AppStore.getState().theme;
 
@@ -48,8 +66,11 @@ class AccountView extends Component {
               keyboardType={'numeric'}
             />
             <Field
-              name='currency'
-              component={TextInput}
+              name='currencyId'
+              component={Picker}
+              options={currencies}
+              labelField='shortName'
+              valueField='id'
               label="Currency"
             />
             <Field
@@ -60,7 +81,7 @@ class AccountView extends Component {
           </Card.Body>
         </Card>
 
-        <Button text="Add" primary={theme} theme="dark" raised disabled={!valid} onPress={handleSubmit(props => this.onSubmit(props))} />
+        <Button text="Add" primary={theme} theme="dark" raised disabled={!valid || submitting} onPress={handleSubmit((data) => this.onSubmit(data))} />
       </View>
     );
   }

@@ -4,18 +4,17 @@ import AccountsView from './AccountsView';
 import {
   ListView
 } from 'react-native';
-import immutable from 'immutable';
 import * as NavigationState from '../../modules/navigation/NavigationState';
 
 const ds = new ListView.DataSource({
-  rowHasChanged: (r1, r2) => !immutable.is(r1, r2)
+  rowHasChanged: (r1, r2) => r1 != r2
 });
 
 export default connect(
   state => ({
-    loaded: state.getIn(['accounts', 'loaded']),
-    items: state.getIn(['accounts', 'items']),
-    dataSource: ds.cloneWithRows(state.getIn(['accounts', 'items']))
+    loaded: state.accounts.loaded,
+    items: state.accounts.items,
+    dataSource: ds.cloneWithRows(state.accounts.items)
   }),
   dispatch => ({
     getAll() {

@@ -2,13 +2,18 @@ import db from '../utils/db';
 
 export async function list() {
   return db
-    .then(DB => DB.executeSql('SELECT * FROM Artist', []))
+    .then(DB => DB.executeSql('SELECT * FROM accounts'))
     .then(results => results[0].rows.raw());
 }
 
 export async function insert(item) {
-  console.log('---item', item);
   return db
-    .then(DB => DB.executeSql('INSERT INTO Artist(Name) VALUES(:value)', [item.get('Name')]))
+    .then(DB =>
+      DB.executeSql('INSERT INTO accounts(name, initialValue, color, currencyId) VALUES(?, ?, ?, ?)', [
+        item.name,
+        item.initialValue,
+        item.color,
+        item.currencyId
+      ]))
     .then(results => results[0].rows.raw());
 }

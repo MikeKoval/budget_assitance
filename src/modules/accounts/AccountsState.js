@@ -1,12 +1,11 @@
-import {Map} from 'immutable';
 import {loop, Effects} from 'redux-loop';
 import * as AccountsService from '../../services/AccountsService';
 
 // Initial state
-const initialState = Map({
+const initialState = {
   loaded: false,
   items: []
-});
+};
 
 export async function getAllResponse(items) {
   return {
@@ -32,14 +31,19 @@ export default function AccountsStateReducer(state = initialState, action = {}) 
   switch (action.type) {
     case GET_ACCOUNTS_REQUEST:
       return loop(
-        state.set('loaded', false),
+        {
+          ...state,
+          loaded: false
+        },
         Effects.promise(getAll)
       );
 
     case GET_ACCOUNTS_RESPONSE:
-      return state
-        .set('items', action.items)
-        .set('loaded', true);
+      return {
+        ...state,
+        items: action.items,
+        loaded: true
+      };
 
     default:
       return state;

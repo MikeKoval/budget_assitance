@@ -31,7 +31,7 @@ const ListRow = React.createClass({
   renderTitle() {
     return (
       <Text style={styles.title}>
-        {this.props.item.Name}
+        {this.props.item.name}
       </Text>
     );
   },
