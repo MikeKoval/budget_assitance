@@ -30,7 +30,7 @@ export async function insert(item) {
 
 export async function getCurrenciesResponse(items) {
   return {
-    type: INSERT_ACCOUNT_RESPONSE,
+    type: GET_CURRENCIES_RESPONSE,
     items
   };
 }

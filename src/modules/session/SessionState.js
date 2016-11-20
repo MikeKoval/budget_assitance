@@ -23,8 +23,10 @@ export default function SessionStateReducer(state = initialState, action = {}) {
   switch (action.type) {
     case INITIALIZE_STATE:
     case RESET_STATE:
-      return state
-        // .set('isReady', true);
+      return {
+        ...state,
+        isReady: true
+      };
 
     default:
       return state;

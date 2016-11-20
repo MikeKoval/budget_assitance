@@ -43,6 +43,14 @@ export default class Toolbar extends Component {
         });
     };
 
+    /*
+     [{
+     icon: 'warning',
+     badge: { value: counter, animate: true },
+     onPress: this.increment
+     }]
+     */
+
     render() {
         const { navigator } = this.context;
         const { theme, counter } = this.state;
@@ -50,15 +58,11 @@ export default class Toolbar extends Component {
 
         return (
             <MaterialToolbar
-                title={navigator && navigator.currentRoute ? navigator.currentRoute.title : 'Welcome'}
+                title={navigator && navigator.currentRoute ? navigator.currentRoute.title : 'Dashboard'}
                 primary={theme}
                 icon={navigator && navigator.isChild ? 'keyboard-backspace' : 'menu'}
                 onIconPress={() => navigator && navigator.isChild ? navigator.back() : onIconPress()}
-                actions={[{
-                    icon: 'warning',
-                    badge: { value: counter, animate: true },
-                    onPress: this.increment
-                }]}
+                actions={navigator && navigator.currentRoute && navigator.currentRoute.actions}
                 rightIconStyle={{
                     margin: 10
                 }}

@@ -7,8 +7,8 @@ const validate = (values) => {
   if (!values.name) {
     errors.name = t.required;
   }
-  if (!values.currency) {
-    errors.currency = t.required;
+  if (!values.currencyId) {
+    errors.currencyId = t.required;
   }
   if (!values.color) {
     errors.color = t.required;

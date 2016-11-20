@@ -3,7 +3,6 @@ import {loop, combineReducers} from 'redux-loop';
 
 import {reducer as formReducer} from 'redux-form';
 
-import NavigationStateReducer from '../modules/navigation/NavigationState';
 import AuthStateReducer from '../modules/auth/AuthState';
 import AccountsStateReducer from '../modules/accounts/AccountsState';
 import AccountStateReducer from '../modules/accounts/AccountState';
@@ -12,10 +11,6 @@ import SessionStateReducer, {RESET_STATE} from '../modules/session/SessionState'
 const reducers = {
   // Authentication/login state
   auth: AuthStateReducer,
-
-  // @NOTE: By convention, the navigation state must live in a subtree called
-  //`navigationState`
-  navigationState: NavigationStateReducer,
 
   session: SessionStateReducer,
 

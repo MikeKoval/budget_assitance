@@ -38,8 +38,8 @@ class TextField extends Component {
           selectedValue={value}
           {...otherProps}
         >
-          {options.forEach(item =>
-            <Item key={item[valueField]} label={item[labelField]} value={item[valueField]} />
+          {options.map(item =>
+            <Picker.Item key={item[valueField]} label={item[labelField]} value={item[valueField]} />
           )}
         </Picker>
       </View>

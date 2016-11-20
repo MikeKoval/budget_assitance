@@ -35,17 +35,15 @@ export default class Navigation extends Component {
                 <Drawer.Header image={<Image source={require('./../img/nav.jpg')} />}>
                     <View style={styles.header}>
                         <Avatar size={80} image={<Image source={{ uri: "http://facebook.github.io/react-native/img/opengraph.png?2" }}/>} />
-                        <Text style={[styles.text, COLOR.paperGrey50, TYPO.paperFontSubhead]}>React Native Material Design</Text>
+                        <Text style={[styles.text, COLOR.paperGrey50, TYPO.paperFontSubhead]}>Budget assistant</Text>
                     </View>
                 </Drawer.Header>
 
                 <Drawer.Section
-                    title="Components"
+                    title="Menu"
                     items={[
                         {
-                            icon: 'face',
-                            value: 'Accounts',
-                            label: '12',
+                            value: 'Dashboard',
                             active: !route || route === 'accounts',
                             onPress: () => this.changeScene('accounts'),
                             onLongPress: () => this.changeScene('accounts')

@@ -18,7 +18,7 @@ export default class Themes extends Component {
                     {PRIMARY_COLORS.map((color) => {
                         return (
                             <TouchableHighlight key={color} onPress={() => { this.changeTheme(color) }}>
-                                <View  style={[styles.item, { backgroundColor: COLOR[`${color}500`].color }]}>
+                                <View style={[styles.item, { backgroundColor: COLOR[`${color}500`].color }]}>
                                     <Text style={styles.text}>{color}</Text>
                                 </View>
                             </TouchableHighlight>

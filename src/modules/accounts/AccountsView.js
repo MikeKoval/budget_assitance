@@ -7,25 +7,42 @@ import {
   ListView,
   RefreshControl
 } from 'react-native';
-import ListRow from '../../components/ListRow';
 import ActionButton from 'react-native-action-button';
+import ScrollableTabView from 'react-native-scrollable-tab-view';
+import AppStore from '../../stores/AppStore';
+import {COLOR, PRIMARY_COLORS} from 'react-native-material-design';
 
-const CounterView = React.createClass({
+// import AppActions from '../../actions/AppActions';
+
+export default React.createClass({
   propTypes: {
     loaded: PropTypes.bool.isRequired,
     items: PropTypes.array,
-    dataSource: PropTypes.object.isRequired,
 
-    getAll: PropTypes.func.isRequired,
-    add: PropTypes.func.isRequired
+    getAll: PropTypes.func.isRequired
   },
 
   componentWillMount() {
     this.props.getAll();
   },
 
+  // changeTheme(theme) {
+  //   AppActions.updateTheme(theme);
+  // },
+
+  onChangeTab({i}) {
+    const {items} = this.props;
+    const item = items[i];
+
+    // console.log(items, i, item);
+
+    // this.changeTheme(item.color);
+  },
+
   render() {
-    const {loaded, getAll, add, dataSource} = this.props;
+    const {loaded, items} = this.props;
+
+    const theme = AppStore.getState().theme;
 
     if (!loaded) {
       return (
@@ -35,24 +52,25 @@ const CounterView = React.createClass({
       );
     }
 
-    const refreshControl = (
-      <RefreshControl
-        refreshing={!loaded}
-        enabled={loaded}
-        onRefresh={getAll}
-      />
-    );
+    // console.log(PRIMARY_COLORS);
+    // console.log(COLOR);
+
+    //todo add all accounts, renderTabBar
 
     return (
       <View style={styles.container}>
-        <ListView
-          style={styles.container}
-          dataSource={dataSource}
-          renderRow={(item) => <ListRow item={item} />} //TODO refactor it
-          enableEmptySections={true}
-          refreshControl={refreshControl}
-        />
-        <ActionButton buttonColor='rgba(231,76,60,1)' onPress={() => add()} />
+        <ScrollableTabView
+          tabBarActiveTextColor={COLOR[`${theme}500`].color}
+          tabBarUnderlineStyle={{backgroundColor: COLOR[`${theme}500`].color}}
+          onChangeTab={this.onChangeTab}
+        >
+          {items.map(item =>
+            <View key={item.id} tabLabel={item.name}>
+              <Text>{item.name}</Text>
+            </View>
+          )}
+        </ScrollableTabView>
+        <ActionButton buttonColor={COLOR[`${theme}500`].color} />
       </View>
     );
   }
@@ -73,5 +91,3 @@ const styles = StyleSheet.create({
     color: 'white'
   }
 });
-
-export default CounterView;

@@ -24,27 +24,18 @@ class AccountView extends Component {
     currencies: PropTypes.array.isRequired
   };
 
-  componentDidMount() {
-    console.log('mount');
+  componentWillMount() {
     this.props.getCurrencies();
   }
 
-  componentWillMount() {
-    console.log('mount');
-    // this.props.getCurrencies();
-  }
-
   onSubmit(data) {
-    this.props.insert(data)
-      .then(() => {
-        alert('saved');
-      });
+    const {insert, getAll} = this.props;
+    return insert(data)
+      .then(() => getAll());
   }
 
   render() {
     const {handleSubmit, valid, submitting, currencies} = this.props;
-
-    console.log(this.props);
 
     const theme = AppStore.getState().theme;
 
@@ -72,11 +63,6 @@ class AccountView extends Component {
               labelField='shortName'
               valueField='id'
               label="Currency"
-            />
-            <Field
-              name='color'
-              component={TextInput}
-              label="Select color"
             />
           </Card.Body>
         </Card>
