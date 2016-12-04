@@ -1,8 +1,7 @@
 import React, {PropTypes, Component} from 'react';
 import {
   View,
-  StyleSheet,
-  ActivityIndicator
+  StyleSheet
 } from 'react-native';
 import {Field, reduxForm} from 'redux-form';
 import TextInput from '../../components/TextInput';
@@ -11,62 +10,35 @@ import RadioButtonGroup from '../../components/RadioButtonGroup';
 
 import AppStore from '../../stores/AppStore';
 
-import validate from './CategoryViewFormValidation';
+import validate from './TransactionViewFormValidation';
 
 @reduxForm({
-  form: 'categoryForm',
+  form: 'transactionForm',
   validate
 })
-class CategoryView extends Component {
+class TransactionView extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func.isRequired,
     insert: PropTypes.func.isRequired,
-    update: PropTypes.func.isRequired,
-    getById: PropTypes.func.isRequired,
     initialize: PropTypes.func.isRequired,
-    item: PropTypes.object,
-    loading: PropTypes.bool
   };
 
   static contextTypes = {
     navigator: PropTypes.object
   };
 
-  componentWillMount() {
-    const {id, getById, initialize} = this.props;
-    if (id) {
-      getById(id)
-        .then(() => {
-          initialize({
-            ...this.props.item
-          })
-        });
-    }
-  }
-
   onSubmit(data) {
-    const {insert, update, getAll, id} = this.props;
+    const {insert, getAll} = this.props;
     const {navigator} = this.context;
-
-    const save = id ? update : insert;
-
-    return save(data)
+    return insert(data)
       .then(() => getAll())
-      .then(() => navigator.to('categories'))
+      .then(() => navigator.to('transactions'))
   }
 
   render() {
-    const {handleSubmit, valid, submitting, item, id, loading} = this.props;
+    const {handleSubmit, valid, submitting} = this.props;
 
     const theme = AppStore.getState().theme;
-
-    if (id  && loading) {
-      return (
-        <View>
-          <ActivityIndicator style={styles.centered}/>
-        </View>
-      );
-    }
 
     return (
       <View style={styles.container}>
@@ -85,7 +57,7 @@ class CategoryView extends Component {
                 { value: 2, label: 'Income' },
                 //{ value: 3, label: 'Sub-category of' },
               ]}
-              selected={(item && item.type) || 1}
+              selected={1}
               component={RadioButtonGroup}
               primary={theme}
             />
@@ -115,4 +87,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CategoryView;
+export default TransactionView;

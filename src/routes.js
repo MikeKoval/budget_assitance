@@ -14,10 +14,22 @@ export default {
     categories: {
         title: 'Categories',
         component: require('./modules/categories/CategoriesViewContainer').default,
+        children: {
+            addCategory: {
+                title: 'Add category',
+                component: require('./modules/categories/CategoryViewContainer').default,
+            },
+        }
     },
-    addCategory: {
-        title: 'Add category',
-        component: require('./modules/categories/CategoryViewContainer').default,
+    transactions: {
+        title: 'Transactions',
+        component: require('./modules/transactions/TransactionsViewContainer').default,
+        children: {
+            addTransaction: {
+                title: 'Add transaction',
+                component: require('./modules/transactions/TransactionViewContainer').default,
+            },
+        }
     },
 
     // welcome: {

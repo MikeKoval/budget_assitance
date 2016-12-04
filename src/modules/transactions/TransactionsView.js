@@ -11,7 +11,7 @@ import {
 import ActionButton from 'react-native-action-button';
 import AppStore from '../../stores/AppStore';
 import {COLOR} from 'react-native-material-design';
-import Row from './CategoriesViewRow';
+import Row from './TransactionsViewRow';
 
 export default React.createClass({
   propTypes: {

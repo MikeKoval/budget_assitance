@@ -73,7 +73,7 @@ class AccountView extends Component {
           </Card.Body>
         </Card>
 
-        <Button text="Add" primary={theme} theme="dark" raised disabled={!valid || submitting} onPress={handleSubmit((data) => this.onSubmit(data))} />
+        <Button text="Save" primary={theme} theme="dark" raised disabled={!valid || submitting} onPress={handleSubmit((data) => this.onSubmit(data))} />
       </View>
     );
   }

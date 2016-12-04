@@ -8,6 +8,8 @@ import AccountsStateReducer from '../modules/accounts/AccountsState';
 import AccountStateReducer from '../modules/accounts/AccountState';
 import CategoriesStateReducer from '../modules/categories/CategoriesState';
 import CategoryStateReducer from '../modules/categories/CategoryState';
+import TransactionsStateReducer from '../modules/transactions/TransactionsState';
+import TransactionStateReducer from '../modules/transactions/TransactionState';
 import SessionStateReducer, {RESET_STATE} from '../modules/session/SessionState';
 
 const reducers = {
@@ -18,6 +20,8 @@ const reducers = {
   account: AccountStateReducer,
   categories: CategoriesStateReducer,
   category: CategoryStateReducer,
+  transactions: TransactionsStateReducer,
+  transaction: TransactionStateReducer,
 
   form: formReducer
 };

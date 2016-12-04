@@ -18,10 +18,6 @@ const ListRow = React.createClass({
     item: PropTypes.object.isRequired
   },
 
-  contextTypes: {
-    navigator: PropTypes.object
-  },
-
   render() {
     return (
       <View>
@@ -39,18 +35,12 @@ const ListRow = React.createClass({
     );
   },
 
-  edit(id) {
-    const {navigator} = this.context;
-    navigator.forward('addCategory', 'Edit category', {id});
-  },
-
   renderRow() {
     const {item} = this.props;
     return (
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.itemButton}
-          onPress={() => this.edit(item.id)}
         >
           <View style={styles.flexDirectionRow}>
             <View style={[styles.container, styles.flexDirectionRow, {marginRight: 4}]}>
