@@ -37,3 +37,11 @@ export async function update(item) {
       ]))
     .then(results => results[0].rows.raw());
 }
+
+export async function remove(id) {
+  return db
+    .then(DB => DB.executeSql('DELETE FROM accounts WHERE id = ?', [id]))
+    .then(results => results[0].rows.raw())
+    .then(results => results && results[0])
+}
+

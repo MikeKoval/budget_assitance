@@ -84,7 +84,7 @@ class AppView extends Component {
         initialRoute={Navigate.getInitialRoute()}
         navigationBar={<Toolbar onIconPress={drawer && drawer.openDrawer} />}
         configureScene={() => {
-          return Navigator.SceneConfigs.FadeAndroid;
+          return Navigator.SceneConfigs.FloatFromRight;
         }}
         renderScene={(route) => {
           if (this.state.navigator && route.component) {

@@ -74,6 +74,21 @@ export async function getCurrencies() {
   }
 }
 
+export async function removeResponse(removed) {
+  return {
+    type: REMOVE_ACCOUNT_RESPONSE,
+    removed
+  };
+}
+
+export async function remove(id) {
+  try {
+    return updateResponse(await AccountsService.remove(id));
+  } catch (error) {
+    // return fetchDataErrorOptimistic(error);
+  }
+}
+
 const INSERT_ACCOUNT_REQUEST = 'AccountState/INSERT_ACCOUNT_REQUEST';
 const INSERT_ACCOUNT_RESPONSE = 'AccountState/INSERT_ACCOUNT_RESPONSE';
 
@@ -85,6 +100,9 @@ const GET_ACCOUNT_RESPONSE = 'AccountState/GET_ACCOUNT_RESPONSE';
 
 const UPDATE_ACCOUNT_REQUEST = 'AccountState/UPDATE_ACCOUNT_REQUEST';
 const UPDATE_ACCOUNT_RESPONSE = 'AccountState/UPDATE_ACCOUNT_RESPONSE';
+
+const REMOVE_ACCOUNT_REQUEST = 'AccountState/REMOVE_ACCOUNT_REQUEST';
+const REMOVE_ACCOUNT_RESPONSE = 'AccountState/REMOVE_ACCOUNT_RESPONSE';
 
 // Reducer
 export default function AccountStateReducer(state = initialState, action = {}) {
@@ -152,6 +170,20 @@ export default function AccountStateReducer(state = initialState, action = {}) {
         ...state,
         updated: action.updated,
         saved: true
+      };
+
+    case REMOVE_ACCOUNT_REQUEST:
+      return loop(
+        {
+          ...state
+        },
+        Effects.promise(remove, action.item)
+      );
+
+    case REMOVE_ACCOUNT_RESPONSE:
+      return {
+        ...state,
+        updated: action.updated
       };
 
     default:

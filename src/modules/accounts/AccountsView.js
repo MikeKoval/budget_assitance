@@ -79,7 +79,6 @@ export default React.createClass({
   },
 
   render() {
-    console.log(COLOR);
     const {loaded, items} = this.props;
     const {navigator} = this.context;
 

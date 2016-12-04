@@ -2,7 +2,8 @@ import React, {PropTypes, Component} from 'react';
 import {
   View,
   StyleSheet,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import {Field, reduxForm} from 'redux-form';
 import TextInput from '../../components/TextInput';
@@ -19,12 +20,16 @@ class AccountView extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func.isRequired,
     insert: PropTypes.func.isRequired,
+    update: PropTypes.func.isRequired,
+    remove: PropTypes.func.isRequired,
     getCurrencies: PropTypes.func.isRequired,
     getById: PropTypes.func.isRequired,
+    getAll: PropTypes.func.isRequired,
     initialize: PropTypes.func.isRequired,
     currencies: PropTypes.array.isRequired,
     loading: PropTypes.bool,
-    item: PropTypes.object
+    item: PropTypes.object,
+    items: PropTypes.array,
   };
 
   static contextTypes = {
@@ -32,15 +37,20 @@ class AccountView extends Component {
   };
 
   componentWillMount() {
-    const {id, getById, initialize, getCurrencies, handleSubmit} = this.props;
+    const {id, getById, initialize, getCurrencies, handleSubmit, items} = this.props;
     const {navigator} = this.context;
-    navigator.actions = [
-      ...navigator.actions,
-      {
-        icon: 'done',
-        onPress: handleSubmit(this.onSubmit)
-      }
-    ];
+
+    if (items.length > 1) {
+      navigator.actions.push({
+        icon: 'delete',
+        onPress: () => this.remove(id)
+      });
+    }
+
+    navigator.actions.push({
+      icon: 'done',
+      onPress: handleSubmit(this.onSubmit)
+    });
 
     getCurrencies()
       .then(() => {
@@ -57,6 +67,7 @@ class AccountView extends Component {
 
   componentWillUnmount() {
     _.remove(this.context.navigator.actions, {icon: 'done'});
+    _.remove(this.context.navigator.actions, {icon: 'delete'});
   }
 
   onSubmit = (data) => {
@@ -67,6 +78,24 @@ class AccountView extends Component {
     return save(data)
       .then(() => getAll())
       .then(() => navigator.back())
+  };
+
+  remove = (id) => {
+    const {remove, getAll} = this.props;
+    const {navigator} = this.context;
+    Alert.alert(
+      '',
+      'Do you really want to delete this item?',
+      [
+        {text: 'NO'},
+        {
+          text: 'YES',
+          onPress: () => remove(id)
+            .then(() => getAll())
+            .then(() => navigator.back())
+        }
+      ]
+    );
   };
 
   render() {

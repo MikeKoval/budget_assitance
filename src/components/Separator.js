@@ -1,25 +1,16 @@
 import React, {PropTypes} from 'react';
 
 import {
-  StyleSheet,
   View
 } from 'react-native';
 
-const Separator = React.createClass({
+export default React.createClass({
   displayName: 'Separator',
 
   render() {
+    const {color} = this.props;
     return (
-      <View style={styles.separator}/>
+      <View style={{height: 1,  backgroundColor: color || '#dddddd'}}/>
     );
   }
 });
-
-const styles = StyleSheet.create({
-  separator: {
-    height: 1,
-    backgroundColor: '#dddddd'
-  },
-});
-
-export default Separator;
