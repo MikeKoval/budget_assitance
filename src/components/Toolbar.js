@@ -43,14 +43,6 @@ export default class Toolbar extends Component {
         });
     };
 
-    /*
-     [{
-     icon: 'warning',
-     badge: { value: counter, animate: true },
-     onPress: this.increment
-     }]
-     */
-
     render() {
         const { navigator } = this.context;
         const { theme } = this.state;
