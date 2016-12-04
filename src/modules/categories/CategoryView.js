@@ -5,43 +5,38 @@ import {
 } from 'react-native';
 import {Field, reduxForm} from 'redux-form';
 import TextInput from '../../components/TextInput';
-import Picker from '../../components/Picker';
 import {Button, Card} from 'react-native-material-design';
+import RadioButtonGroup from '../../components/RadioButtonGroup';
 
 import AppStore from '../../stores/AppStore';
 
-import AccountViewFormValidation from './AccountViewFormValidation';
+import validate from './CategoryViewFormValidation';
 
 @reduxForm({
-  form: 'accountForm',
-  validate: AccountViewFormValidation
+  form: 'categoryForm',
+  validate
 })
-class AccountView extends Component {
+class CategoryView extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func.isRequired,
     insert: PropTypes.func.isRequired,
-    getCurrencies: PropTypes.func.isRequired,
-    currencies: PropTypes.array.isRequired
+    initialize: PropTypes.func.isRequired,
   };
 
   static contextTypes = {
     navigator: PropTypes.object
   };
 
-  componentWillMount() {
-    this.props.getCurrencies();
-  }
-
   onSubmit(data) {
     const {insert, getAll} = this.props;
     const {navigator} = this.context;
     return insert(data)
       .then(() => getAll())
-      .then(() => navigator.to('accounts'))
+      .then(() => navigator.to('categories'))
   }
 
   render() {
-    const {handleSubmit, valid, submitting, currencies} = this.props;
+    const {handleSubmit, valid, submitting} = this.props;
 
     const theme = AppStore.getState().theme;
 
@@ -52,24 +47,21 @@ class AccountView extends Component {
             <Field
               name='name'
               component={TextInput}
-              label="Account name"
+              label="Category name"
               autoFocus
             />
             <Field
-              name='initialValue'
-              component={TextInput}
-              label="Initial value"
-              defaultValue={'0'}
-              keyboardType={'numeric'}
+              name='type'
+              items={[
+                { value: 1, label: 'Expense' },
+                { value: 2, label: 'Income' },
+                //{ value: 3, label: 'Sub-category of' },
+              ]}
+              selected={1}
+              component={RadioButtonGroup}
+              primary={theme}
             />
-            <Field
-              name='currencyId'
-              component={Picker}
-              options={currencies}
-              labelField='shortName'
-              valueField='id'
-              label="Currency"
-            />
+
           </Card.Body>
         </Card>
 
@@ -95,4 +87,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AccountView;
+export default CategoryView;

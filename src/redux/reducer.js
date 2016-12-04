@@ -7,19 +7,17 @@ import AuthStateReducer from '../modules/auth/AuthState';
 import AccountsStateReducer from '../modules/accounts/AccountsState';
 import AccountStateReducer from '../modules/accounts/AccountState';
 import CategoriesStateReducer from '../modules/categories/CategoriesState';
+import CategoryStateReducer from '../modules/categories/CategoryState';
 import SessionStateReducer, {RESET_STATE} from '../modules/session/SessionState';
 
 const reducers = {
   // Authentication/login state
   auth: AuthStateReducer,
-
   session: SessionStateReducer,
-
   accounts: AccountsStateReducer,
-
   account: AccountStateReducer,
-
   categories: CategoriesStateReducer,
+  category: CategoryStateReducer,
 
   form: formReducer
 };

@@ -15,6 +15,10 @@ export default {
         title: 'Categories',
         component: require('./modules/categories/CategoriesViewContainer').default,
     },
+    addCategory: {
+        title: 'Add category',
+        component: require('./modules/categories/CategoryViewContainer').default,
+    },
 
     // welcome: {
     //     initialRoute: true,

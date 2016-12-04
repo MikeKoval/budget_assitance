@@ -16,7 +16,6 @@ import Row from './CategoriesViewRow';
 export default React.createClass({
   propTypes: {
     loaded: PropTypes.bool.isRequired,
-    items: PropTypes.array,
     dataSource: PropTypes.object,
 
     getAll: PropTypes.func.isRequired
@@ -31,9 +30,8 @@ export default React.createClass({
   },
 
   render() {
-    const {loaded, items} = this.props;
+    const {loaded, dataSource} = this.props;
     const {navigator} = this.context;
-    console.log(items);
 
     const theme = AppStore.getState().theme;
 
@@ -57,7 +55,7 @@ export default React.createClass({
       <View style={styles.container}>
         <ListView
           style={styles.container}
-          dataSource={this.props.dataSource}
+          dataSource={dataSource}
           renderRow={(item) => (
             <Row item={item} />
           )}
