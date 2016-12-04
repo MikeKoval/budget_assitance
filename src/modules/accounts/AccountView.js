@@ -1,16 +1,15 @@
 import React, {PropTypes, Component} from 'react';
 import {
   View,
-  StyleSheet
+  StyleSheet,
+  ActivityIndicator
 } from 'react-native';
 import {Field, reduxForm} from 'redux-form';
 import TextInput from '../../components/TextInput';
 import Picker from '../../components/Picker';
-import {Button, Card} from 'react-native-material-design';
-
-import AppStore from '../../stores/AppStore';
-
+import {Card} from 'react-native-material-design';
 import AccountViewFormValidation from './AccountViewFormValidation';
+import _ from 'lodash';
 
 @reduxForm({
   form: 'accountForm',
@@ -21,7 +20,11 @@ class AccountView extends Component {
     handleSubmit: PropTypes.func.isRequired,
     insert: PropTypes.func.isRequired,
     getCurrencies: PropTypes.func.isRequired,
-    currencies: PropTypes.array.isRequired
+    getById: PropTypes.func.isRequired,
+    initialize: PropTypes.func.isRequired,
+    currencies: PropTypes.array.isRequired,
+    loading: PropTypes.bool,
+    item: PropTypes.object
   };
 
   static contextTypes = {
@@ -29,21 +32,53 @@ class AccountView extends Component {
   };
 
   componentWillMount() {
-    this.props.getCurrencies();
+    const {id, getById, initialize, getCurrencies, handleSubmit} = this.props;
+    const {navigator} = this.context;
+    navigator.actions = [
+      ...navigator.actions,
+      {
+        icon: 'done',
+        onPress: handleSubmit(this.onSubmit)
+      }
+    ];
+
+    getCurrencies()
+      .then(() => {
+        if (id) {
+          return getById(id)
+            .then(() => {
+              initialize({
+                ...this.props.item
+              })
+            });
+        }
+      })
   }
 
-  onSubmit(data) {
-    const {insert, getAll} = this.props;
+  componentWillUnmount() {
+    _.remove(this.context.navigator.actions, {icon: 'done'});
+  }
+
+  onSubmit = (data) => {
+    const {insert, update, getAll, id} = this.props;
     const {navigator} = this.context;
-    return insert(data)
+    const save = id ? update : insert;
+
+    return save(data)
       .then(() => getAll())
       .then(() => navigator.to('accounts'))
-  }
+  };
 
   render() {
-    const {handleSubmit, valid, submitting, currencies} = this.props;
+    const {currencies, id, loading} = this.props;
 
-    const theme = AppStore.getState().theme;
+    if (id  && loading) {
+      return (
+        <View>
+          <ActivityIndicator style={styles.centered}/>
+        </View>
+      );
+    }
 
     return (
       <View style={styles.container}>
@@ -59,7 +94,6 @@ class AccountView extends Component {
               name='initialValue'
               component={TextInput}
               label="Initial value"
-              defaultValue={'0'}
               keyboardType={'numeric'}
             />
             <Field
@@ -72,8 +106,6 @@ class AccountView extends Component {
             />
           </Card.Body>
         </Card>
-
-        <Button text="Save" primary={theme} theme="dark" raised disabled={!valid || submitting} onPress={handleSubmit((data) => this.onSubmit(data))} />
       </View>
     );
   }

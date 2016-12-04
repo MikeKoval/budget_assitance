@@ -6,12 +6,11 @@ import {
 } from 'react-native';
 import {Field, reduxForm} from 'redux-form';
 import TextInput from '../../components/TextInput';
-import {Button, Card} from 'react-native-material-design';
+import { Card} from 'react-native-material-design';
 import RadioButtonGroup from '../../components/RadioButtonGroup';
-
 import AppStore from '../../stores/AppStore';
-
 import validate from './CategoryViewFormValidation';
+import _ from 'lodash';
 
 @reduxForm({
   form: 'categoryForm',
@@ -33,7 +32,16 @@ class CategoryView extends Component {
   };
 
   componentWillMount() {
-    const {id, getById, initialize} = this.props;
+    const {id, getById, initialize, handleSubmit} = this.props;
+    const {navigator} = this.context;
+    navigator.actions = [
+      ...navigator.actions,
+      {
+        icon: 'done',
+        onPress: handleSubmit(this.onSubmit)
+      }
+    ];
+
     if (id) {
       getById(id)
         .then(() => {
@@ -44,7 +52,11 @@ class CategoryView extends Component {
     }
   }
 
-  onSubmit(data) {
+  componentWillUnmount() {
+    _.remove(this.context.navigator.actions, {icon: 'done'});
+  }
+
+  onSubmit = (data) => {
     const {insert, update, getAll, id} = this.props;
     const {navigator} = this.context;
 
@@ -53,10 +65,10 @@ class CategoryView extends Component {
     return save(data)
       .then(() => getAll())
       .then(() => navigator.to('categories'))
-  }
+  };
 
   render() {
-    const {handleSubmit, valid, submitting, item, id, loading} = this.props;
+    const {item, id, loading} = this.props;
 
     const theme = AppStore.getState().theme;
 
@@ -92,8 +104,6 @@ class CategoryView extends Component {
 
           </Card.Body>
         </Card>
-
-        <Button text="Save" primary={theme} theme="dark" raised disabled={!valid || submitting} onPress={handleSubmit((data) => this.onSubmit(data))} />
       </View>
     );
   }

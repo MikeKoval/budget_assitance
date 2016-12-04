@@ -42,8 +42,10 @@ class AppView extends Component {
   };
 
   setNavigator = (navigator) => {
+    const nav = new Navigate(navigator);
+    nav.actions = [];
     this.setState({
-      navigator: new Navigate(navigator)
+      navigator: nav
     });
   };
 

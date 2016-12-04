@@ -53,7 +53,7 @@ export default class Toolbar extends Component {
 
     render() {
         const { navigator } = this.context;
-        const { theme, counter } = this.state;
+        const { theme } = this.state;
         const { onIconPress } = this.props;
 
         return (
@@ -62,7 +62,7 @@ export default class Toolbar extends Component {
                 primary={theme}
                 icon={navigator && navigator.isChild ? 'keyboard-backspace' : 'menu'}
                 onIconPress={() => navigator && navigator.isChild ? navigator.back() : onIconPress()}
-                actions={navigator && navigator.currentRoute && navigator.currentRoute.actions}
+                actions={navigator && navigator.actions}
                 rightIconStyle={{
                     margin: 10
                 }}

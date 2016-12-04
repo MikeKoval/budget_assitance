@@ -9,7 +9,7 @@ export default connect(
   }),
   dispatch => ({
     getAll() {
-      dispatch(getAll());
+      return dispatch(getAll());
     }
   })
 )(AccountsView);

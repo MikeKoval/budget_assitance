@@ -3,13 +3,16 @@ export default {
         initialRoute: true,
         title: 'Dashboard',
         component: require('./modules/accounts/AccountsViewContainer').default,
+        children: {
+            editAccount: {
+                title: 'Edit account',
+                component: require('./modules/accounts/AccountViewContainer').default
+            }
+        }
     },
     addAccount: {
         title: 'Add account',
-        component: require('./modules/accounts/AccountViewContainer').default,
-        actions: [{
-            icon: 'face'
-        }]
+        component: require('./modules/accounts/AccountViewContainer').default
     },
     categories: {
         title: 'Categories',

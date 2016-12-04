@@ -11,6 +11,7 @@ import ActionButton from 'react-native-action-button';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import AppStore from '../../stores/AppStore';
 import {COLOR, PRIMARY_COLORS} from 'react-native-material-design';
+import _ from 'lodash';
 
 // import AppActions from '../../actions/AppActions';
 
@@ -26,8 +27,35 @@ export default React.createClass({
     navigator: PropTypes.object
   },
 
+  edit(id) {
+    const {navigator} = this.context;
+    navigator.forward('editAccount', 'Edit account', {id});
+  },
+
   componentWillMount() {
-    this.props.getAll();
+    const {navigator} = this.context;
+    navigator.actions = [
+      ...navigator.actions,
+      {
+        icon: 'edit',
+        onPress: () => this.edit(this.state.id)
+      }
+    ];
+
+    this.props.getAll()
+      .then(() => {
+        const {items} = this.props;
+        const item = items[0];
+
+        this.setState({
+          ...this.state,
+          id: item.id
+        });
+      })
+  },
+
+  componentWillUnmount() {
+    _.remove(this.context.navigator.actions, {icon: 'edit'});
   },
 
   // changeTheme(theme) {
@@ -37,6 +65,11 @@ export default React.createClass({
   onChangeTab({i}) {
     const {items} = this.props;
     const item = items[i];
+
+    this.setState({
+      ...this.state,
+      id: item.id
+    });
 
     // console.log(items, i, item);
 
