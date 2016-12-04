@@ -5,19 +5,19 @@ import {
   StyleSheet,
   ActivityIndicator,
   ListView,
-  RefreshControl
+  RefreshControl,
+  ScrollView
 } from 'react-native';
 import ActionButton from 'react-native-action-button';
-import ScrollableTabView from 'react-native-scrollable-tab-view';
 import AppStore from '../../stores/AppStore';
-import {COLOR, PRIMARY_COLORS} from 'react-native-material-design';
-
-// import AppActions from '../../actions/AppActions';
+import {COLOR} from 'react-native-material-design';
+import Row from './CategoriesViewRow';
 
 export default React.createClass({
   propTypes: {
     loaded: PropTypes.bool.isRequired,
     items: PropTypes.array,
+    dataSource: PropTypes.object,
 
     getAll: PropTypes.func.isRequired
   },
@@ -30,22 +30,10 @@ export default React.createClass({
     this.props.getAll();
   },
 
-  // changeTheme(theme) {
-  //   AppActions.updateTheme(theme);
-  // },
-
-  onChangeTab({i}) {
-    const {items} = this.props;
-    const item = items[i];
-
-    // console.log(items, i, item);
-
-    // this.changeTheme(item.color);
-  },
-
   render() {
     const {loaded, items} = this.props;
     const {navigator} = this.context;
+    console.log(items);
 
     const theme = AppStore.getState().theme;
 
@@ -57,20 +45,26 @@ export default React.createClass({
       );
     }
 
+    const refreshControl = (
+      <RefreshControl
+        refreshing={!this.props.loaded}
+        enabled={this.props.loaded}
+        onRefresh={this.props.getAll}
+      />
+    );
+
     return (
       <View style={styles.container}>
-        <ScrollableTabView
-          tabBarActiveTextColor={COLOR[`${theme}500`].color}
-          tabBarUnderlineStyle={{backgroundColor: COLOR[`${theme}500`].color}}
-          onChangeTab={this.onChangeTab}
-        >
-          {items.map(item =>
-            <View key={item.id} tabLabel={item.name}>
-              <Text>{item.name}</Text>
-            </View>
+        <ListView
+          style={styles.container}
+          dataSource={this.props.dataSource}
+          renderRow={(item) => (
+            <Row item={item} />
           )}
-        </ScrollableTabView>
-        <ActionButton buttonColor={COLOR[`${theme}500`].color} onPress={() => navigator.to('addAccount')} />
+          enableEmptySections={true}
+          refreshControl={refreshControl}
+        />
+        <ActionButton buttonColor={COLOR[`${theme}500`].color} onPress={() => navigator.to('addCategory')} />
       </View>
     );
   }

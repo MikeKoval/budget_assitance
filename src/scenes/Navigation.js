@@ -53,6 +53,12 @@ export default class Navigation extends Component {
                             active: !route || route === 'addAccount',
                             onPress: () => this.changeScene('addAccount'),
                             onLongPress: () => this.changeScene('addAccount')
+                        },
+                        {
+                            value: 'Categories',
+                            active: !route || route === 'categories',
+                            onPress: () => this.changeScene('categories'),
+                            onLongPress: () => this.changeScene('categories')
                         }
                     ]}
                 />

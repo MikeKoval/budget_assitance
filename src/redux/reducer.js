@@ -6,6 +6,7 @@ import {reducer as formReducer} from 'redux-form';
 import AuthStateReducer from '../modules/auth/AuthState';
 import AccountsStateReducer from '../modules/accounts/AccountsState';
 import AccountStateReducer from '../modules/accounts/AccountState';
+import CategoriesStateReducer from '../modules/categories/CategoriesState';
 import SessionStateReducer, {RESET_STATE} from '../modules/session/SessionState';
 
 const reducers = {
@@ -17,6 +18,8 @@ const reducers = {
   accounts: AccountsStateReducer,
 
   account: AccountStateReducer,
+
+  categories: CategoriesStateReducer,
 
   form: formReducer
 };

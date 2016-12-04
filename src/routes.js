@@ -1,20 +1,20 @@
 export default {
-
     accounts: {
         initialRoute: true,
-
         title: 'Dashboard',
         component: require('./modules/accounts/AccountsViewContainer').default,
     },
-
     addAccount: {
-
         title: 'Add account',
         component: require('./modules/accounts/AccountViewContainer').default,
         actions: [{
             icon: 'face'
         }]
-    }
+    },
+    categories: {
+        title: 'Categories',
+        component: require('./modules/categories/CategoriesViewContainer').default,
+    },
 
     // welcome: {
     //     initialRoute: true,

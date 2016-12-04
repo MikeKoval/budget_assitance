@@ -24,14 +24,20 @@ class AccountView extends Component {
     currencies: PropTypes.array.isRequired
   };
 
+  static contextTypes = {
+    navigator: PropTypes.object
+  };
+
   componentWillMount() {
     this.props.getCurrencies();
   }
 
   onSubmit(data) {
     const {insert, getAll} = this.props;
+    const {navigator} = this.context;
     return insert(data)
-      .then(() => getAll());
+      .then(() => getAll())
+      .then(() => navigator.to('accounts'))
   }
 
   render() {

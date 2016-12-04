@@ -6,17 +6,16 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Separator from './Separator';
+import Separator from '../../components/Separator';
+import {COLOR} from 'react-native-material-design';
 
-const ITEM_ICON_SIZE = 24;
-
-const ARROW_RIGHT_ICON_SIZE = 16;
-const ARROW_RIGHT_ICON_COLOR = '#dddddd';
+const ICON_SIZE = 16;
+const INCOME_ICON_COLOR = COLOR.paperGreen500.color;
+const EXPENSE_ICON_COLOR = COLOR.paperRed500.color;
 
 const ListRow = React.createClass({
   propTypes: {
-    item: PropTypes.object.isRequired,
-    showCourseDetails: PropTypes.func
+    item: PropTypes.object.isRequired
   },
 
   render() {
@@ -37,28 +36,25 @@ const ListRow = React.createClass({
   },
 
   renderRow() {
+    const {item} = this.props;
     return (
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.itemButton}
-          onPress={this.props.showCourseDetails}
         >
           <View style={styles.flexDirectionRow}>
             <View style={[styles.container, styles.flexDirectionRow, {marginRight: 4}]}>
               {this.renderTitle()}
             </View>
             <View style={styles.menuRightIconContainer}>
-              {this.renderArrowRightIcon()}
+              {item.type === 2 ?
+                <Icon name={'add'} size={ICON_SIZE} color={INCOME_ICON_COLOR} /> :
+                <Icon name={'remove'} size={ICON_SIZE} color={EXPENSE_ICON_COLOR} />
+              }
             </View>
           </View>
         </TouchableOpacity>
       </View>
-    );
-  },
-
-  renderArrowRightIcon() {
-    return (
-      <Icon name={'keyboard-arrow-right'} size={ARROW_RIGHT_ICON_SIZE} color={ARROW_RIGHT_ICON_COLOR} />
     );
   }
 });
@@ -77,7 +73,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   menuRightIconContainer: {
-    height: ITEM_ICON_SIZE,
+    height: 24,
     justifyContent: 'center',
     paddingRight: 4
   },
