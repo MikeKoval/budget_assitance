@@ -101,7 +101,7 @@ export default function AccountStateReducer(state = initialState, action = {}) {
     case INSERT_ACCOUNT_RESPONSE:
       return {
         ...state,
-        item: action.item,
+        inserted: action.item,
         saved: true
       };
 

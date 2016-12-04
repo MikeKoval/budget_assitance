@@ -12,6 +12,8 @@ import ScrollableTabView from 'react-native-scrollable-tab-view';
 import AppStore from '../../stores/AppStore';
 import {COLOR, PRIMARY_COLORS} from 'react-native-material-design';
 import _ from 'lodash';
+import Icon from 'react-native-vector-icons/Ionicons';
+
 
 // import AppActions from '../../actions/AppActions';
 
@@ -77,6 +79,7 @@ export default React.createClass({
   },
 
   render() {
+    console.log(COLOR);
     const {loaded, items} = this.props;
     const {navigator} = this.context;
 
@@ -103,7 +106,14 @@ export default React.createClass({
             </View>
           )}
         </ScrollableTabView>
-        <ActionButton buttonColor={COLOR[`${theme}500`].color} onPress={() => navigator.to('addAccount')} />
+        <ActionButton buttonColor={COLOR[`${theme}500`].color}>
+          <ActionButton.Item buttonColor={COLOR[`paperPink800`].color} title="New account" onPress={() => navigator.forward('addAccount')}>
+            <Icon name="md-create" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor={COLOR[`paperYellow800`].color} title="New transaction" onPress={() => navigator.forward('addTransaction')}>
+            <Icon name="md-create" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+        </ActionButton>
       </View>
     );
   }

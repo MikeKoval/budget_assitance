@@ -66,7 +66,7 @@ class AccountView extends Component {
 
     return save(data)
       .then(() => getAll())
-      .then(() => navigator.to('accounts'))
+      .then(() => navigator.back())
   };
 
   render() {

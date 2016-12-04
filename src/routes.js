@@ -4,10 +4,18 @@ export default {
         title: 'Dashboard',
         component: require('./modules/accounts/AccountsViewContainer').default,
         children: {
+            addAccount: {
+                title: 'Add account',
+                component: require('./modules/accounts/AccountViewContainer').default
+            },
             editAccount: {
                 title: 'Edit account',
                 component: require('./modules/accounts/AccountViewContainer').default
-            }
+            },
+            addTransaction: {
+                title: 'Add transaction',
+                component: require('./modules/transactions/TransactionViewContainer').default,
+            },
         }
     },
     addAccount: {

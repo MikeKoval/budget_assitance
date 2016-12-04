@@ -64,7 +64,7 @@ class CategoryView extends Component {
 
     return save(data)
       .then(() => getAll())
-      .then(() => navigator.to('categories'))
+      .then(() => navigator.back())
   };
 
   render() {

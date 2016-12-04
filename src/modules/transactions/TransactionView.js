@@ -32,7 +32,7 @@ class TransactionView extends Component {
     const {navigator} = this.context;
     return insert(data)
       .then(() => getAll())
-      .then(() => navigator.to('transactions'))
+      .then(() => navigator.back())
   }
 
   render() {
