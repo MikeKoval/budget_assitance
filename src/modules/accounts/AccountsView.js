@@ -10,7 +10,7 @@ import {
 import ActionButton from 'react-native-action-button';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import AppStore from '../../stores/AppStore';
-import {COLOR, PRIMARY_COLORS} from 'react-native-material-design';
+import {COLOR, PRIMARY_COLORS, Card, Subheader} from 'react-native-material-design';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -100,8 +100,13 @@ export default React.createClass({
           onChangeTab={this.onChangeTab}
         >
           {items.map(item =>
-            <View key={item.id} tabLabel={item.name}>
-              <Text>{item.name}</Text>
+            <View key={item.id} tabLabel={item.name} style={styles.container}>
+              <Card>
+                <Card.Body>
+                  <Subheader text="Balance" color="#444" />
+                  <Text style={[styles.accountAmountText, {color: COLOR[theme + '500'].color}]}>{item.currency} {item.amount}</Text>
+                </Card.Body>
+              </Card>
             </View>
           )}
         </ScrollableTabView>
@@ -131,5 +136,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     height: 22,
     color: 'white'
+  },
+  accountAmountText: {
+    textAlign: 'center',
+    fontSize: 24
   }
 });

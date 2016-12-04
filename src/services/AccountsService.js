@@ -2,7 +2,22 @@ import db from '../utils/db';
 
 export async function list() {
   return db
-    .then(DB => DB.executeSql('SELECT * FROM accounts'))
+    .then(DB => DB.executeSql(`
+      SELECT
+        accounts.*,
+        currencies.shortName as currency,
+        accounts.initialValue +
+        (SELECT IFNULL(SUM(transactions.amount), 0) FROM transactions WHERE isTransfer = 1 AND targetAccountId = accounts.id) -
+        (SELECT IFNULL(SUM(transactions.amount), 0) FROM transactions WHERE isTransfer = 1 AND accountId = accounts.id) AS amount 
+      
+      FROM 
+        accounts
+        
+        LEFT JOIN
+          currencies
+        WHERE
+          currencies.id = accounts.currencyId
+    `))
     .then(results => results[0].rows.raw());
 }
 
