@@ -7,6 +7,9 @@ const validate = (values) => {
   if (!values.name) {
     errors.name = t.required;
   }
+  if (values.initialValue === '' || !/^\d+$/.test(values.initialValue)) {
+    errors.initialValue = t.required;
+  }
   if (!values.currencyId) {
     errors.currencyId = t.required;
   }

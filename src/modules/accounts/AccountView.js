@@ -71,13 +71,25 @@ class AccountView extends Component {
   }
 
   onSubmit = (data) => {
-    const {insert, update, getAll, id} = this.props;
+    const {insert, update, getAll, id, initialize} = this.props;
     const {navigator} = this.context;
     const save = id ? update : insert;
 
     return save(data)
       .then(() => getAll())
-      .then(() => navigator.back())
+      .then(() => {
+        const current = navigator.navigator.getCurrentRoutes()[0].path;
+        const path = current.substr(0, current.lastIndexOf('.'));
+        const obj = navigator._getRouteObject(path);
+
+        if (obj) {
+          return navigator.back();
+        }
+        else {
+          initialize({});
+          navigator.to('accounts');
+        }
+      })
   };
 
   remove = (id) => {
@@ -99,6 +111,7 @@ class AccountView extends Component {
   };
 
   render() {
+    console.log(this.context);
     const {currencies, id, loading} = this.props;
 
     if (id  && loading) {

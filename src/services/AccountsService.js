@@ -7,8 +7,8 @@ export async function list() {
         accounts.*,
         currencies.shortName as currency,
         accounts.initialValue +
-        (SELECT IFNULL(SUM(transactions.amount), 0) FROM transactions WHERE isTransfer = 1 AND targetAccountId = accounts.id) -
-        (SELECT IFNULL(SUM(transactions.amount), 0) FROM transactions WHERE isTransfer = 1 AND accountId = accounts.id) AS amount 
+        (SELECT IFNULL(SUM(transactions.amount), 0) FROM transactions WHERE type = 1 AND targetAccountId = accounts.id) -
+        (SELECT IFNULL(SUM(transactions.amount), 0) FROM transactions WHERE type = 1 AND accountId = accounts.id) AS amount 
       
       FROM 
         accounts

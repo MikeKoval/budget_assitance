@@ -13,6 +13,9 @@ const validate = (values) => {
   if (!values.amount) {
     errors.amount = t.required;
   }
+  if (!values.note) {
+    errors.note = t.required;
+  }
   return errors;
 };
 

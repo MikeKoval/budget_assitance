@@ -1,8 +1,8 @@
 import db from '../utils/db';
 
-export async function list() {
+export async function list(type) {
   return db
-    .then(DB => DB.executeSql('SELECT * FROM categories ORDER BY name'))
+    .then(DB => DB.executeSql('SELECT * FROM categories ' + (type ? 'WHERE type = ?' : '') +' ORDER BY name', type ? [type]: []))
     .then(results => results[0].rows.raw());
 }
 

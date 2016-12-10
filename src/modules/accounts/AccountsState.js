@@ -22,9 +22,18 @@ export async function getAll() {
   }
 }
 
+export function setSelectedId(id) {
+  return {
+    type: SET_SELECTED_ACCOUNT_ID,
+    id
+  };
+}
+
+
 const GET_ACCOUNTS_REQUEST = 'AccountsState/GET_ACCOUNTS_REQUEST';
 const GET_ACCOUNTS_RESPONSE = 'AccountsState/GET_ACCOUNTS_RESPONSE';
 // const LOAD_ACCOUNTS = 'AccountsState/LOAD_ACCOUNTS';
+const SET_SELECTED_ACCOUNT_ID = 'AccountsState/SET_SELECTED_ACCOUNT_ID';
 
 // Reducer
 export default function AccountsStateReducer(state = initialState, action = {}) {
@@ -43,6 +52,12 @@ export default function AccountsStateReducer(state = initialState, action = {}) 
         ...state,
         items: action.items,
         loaded: true
+      };
+
+    case SET_SELECTED_ACCOUNT_ID:
+      return {
+        ...state,
+        id: action.id
       };
 
     default:

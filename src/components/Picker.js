@@ -13,28 +13,36 @@ class TextField extends Component {
     input: PropTypes.object.isRequired,
     options: PropTypes.array.isRequired,
     labelField: PropTypes.string.isRequired,
-    valueField: PropTypes.string.isRequired
+    valueField: PropTypes.string.isRequired,
+    onBeforeChange: PropTypes.func
   };
 
   render() {
     const {
       style,
+      labelStyle,
       input: {value, onChange},
       meta: {error, touched},
       label,
       options,
       labelField,
       valueField,
+      onBeforeChange,
       ...otherProps
     } = this.props;
 
     return (
       <View>
-        {label && <Text style={(touched && error) ? [styles.label, {color: 'red'}] : styles.label}>{label}</Text>}
+        {label && <Text style={(touched && error) ? [styles.label, labelStyle, {color: 'red'}] : [labelStyle, styles.label]}>{label}</Text>}
         <Picker
           // Let's only change the text color instead of showing error messages
           style={(touched && error) ? [style, styles.textInput, {color: 'red'}] : [styles.textInput, style]}
-          onValueChange={(value) => onChange(value)}
+          onValueChange={(value) => {
+            if (onBeforeChange) {
+              onBeforeChange(value);
+            }
+            return onChange(value);
+          }}
           selectedValue={value}
           {...otherProps}
         >
@@ -49,10 +57,12 @@ class TextField extends Component {
 
 const styles = StyleSheet.create({
   textInput: {
-    height: 40
+    height: 40,
   },
   label: {
-    marginTop: 10
+    marginTop: 10,
+    flex: 1,
+    paddingLeft: 8
   }
 });
 

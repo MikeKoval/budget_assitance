@@ -46,13 +46,12 @@ export default React.createClass({
 
     this.props.getAll()
       .then(() => {
-        const {items} = this.props;
+        const {items, id, setSelectedId} = this.props;
         const item = items[0];
 
-        this.setState({
-          ...this.state,
-          id: item.id
-        });
+        if (!id) {
+          setSelectedId(item.id);
+        }
       })
   },
 
@@ -65,13 +64,10 @@ export default React.createClass({
   // },
 
   onChangeTab({i}) {
-    const {items} = this.props;
+    const {items, setSelectedId} = this.props;
     const item = items[i];
 
-    this.setState({
-      ...this.state,
-      id: item.id
-    });
+    return setSelectedId(item.id);
 
     // console.log(items, i, item);
 
@@ -79,10 +75,14 @@ export default React.createClass({
   },
 
   render() {
-    const {loaded, items} = this.props;
+    const {loaded, items, id} = this.props;
     const {navigator} = this.context;
 
     const theme = AppStore.getState().theme;
+
+    let index = _.findIndex(items, {id});
+    index = index === -1 ? 0 : index;
+    console.log(index);
 
     if (!loaded) {
       return (
@@ -98,6 +98,7 @@ export default React.createClass({
           tabBarActiveTextColor={COLOR[`${theme}500`].color}
           tabBarUnderlineStyle={{backgroundColor: COLOR[`${theme}500`].color}}
           onChangeTab={this.onChangeTab}
+          tab={index}
         >
           {items.map(item =>
             <View key={item.id} tabLabel={item.name} style={styles.container}>
@@ -114,7 +115,7 @@ export default React.createClass({
           <ActionButton.Item buttonColor={COLOR[`paperPink800`].color} title="New account" onPress={() => navigator.forward('addAccount')}>
             <Icon name="md-create" style={styles.actionButtonIcon} />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor={COLOR[`paperYellow800`].color} title="New transaction" onPress={() => navigator.forward('addTransaction')}>
+          <ActionButton.Item buttonColor={COLOR[`paperYellow800`].color} title="New transaction" onPress={() => navigator.forward('addTransaction', 'Add transaction', {accountId: id})}>
             <Icon name="md-create" style={styles.actionButtonIcon} />
           </ActionButton.Item>
         </ActionButton>

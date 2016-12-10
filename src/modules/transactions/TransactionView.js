@@ -1,3 +1,9 @@
+import {connect} from 'react-redux';
+import {insert} from './TransactionState';
+import {getAll} from './TransactionsState';
+import {getAll as getAllAccounts} from '../accounts/AccountsState';
+import {getAll as getAllCategories} from '../categories/CategoriesState';
+
 import React, {PropTypes, Component} from 'react';
 import {
   View,
@@ -15,16 +21,44 @@ import ScrollableTabView from 'react-native-scrollable-tab-view';
 import TextInput from '../../components/TextInput';
 import DatePicker from '../../components/DatePicker';
 import {Card} from 'react-native-material-design';
+import Picker from '../../components/Picker';
 
 @reduxForm({
   form: 'transactionForm',
   validate
 })
+@connect(
+  state => ({
+    loading: state.transaction.loading,
+    error: state.transaction.error,
+    accounts: state.accounts.items,
+    categories: state.categories.items,
+    form: state.form.transactionForm,
+  }),
+  dispatch => ({
+    insert(item) {
+      return dispatch(insert(item));
+    },
+    getAll() {
+      dispatch(getAll());
+    },
+    getAllAccounts() {
+      return dispatch(getAllAccounts());
+    },
+    getAllCategories(type = null) {
+      return dispatch(getAllCategories(type));
+    }
+  })
+)
 class TransactionView extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func.isRequired,
     insert: PropTypes.func.isRequired,
     initialize: PropTypes.func.isRequired,
+    getAllCategories: PropTypes.func.isRequired,
+    getAllAccounts: PropTypes.func.isRequired,
+    accounts: PropTypes.array.isRequired,
+    categories: PropTypes.array.isRequired,
   };
 
   state = {
@@ -38,7 +72,16 @@ class TransactionView extends Component {
 
   componentWillMount() {
     const {navigator} = this.context;
-    const {handleSubmit} = this.props;
+    const {handleSubmit, getAllCategories, getAllAccounts, initialize, accountId} = this.props;
+    getAllCategories(this.state.type)
+      .then(() => getAllAccounts())
+      .then(() => {
+        initialize({
+          type: 1,
+          categoryId: this.props.categories[0].id,
+          accountId: accountId || this.props.accounts[0].id,
+        });
+      });
     navigator.actions = [
       ...navigator.actions,
       {
@@ -61,10 +104,20 @@ class TransactionView extends Component {
   };
 
   changeType = (type) => {
+    const {getAllCategories, initialize, accounts, form} = this.props;
     this.setState({
       ...this.state,
       type
-    })
+    });
+
+    getAllCategories(type)
+      .then(() => {
+        initialize({
+          type,
+          categoryId: this.props.categories[0].id,
+          accountId: (form && form.values && form.values.accountId) || accounts && accounts[0] && accounts[0].id
+        });
+      })
   };
 
   onPressNumber = (number) => {
@@ -75,7 +128,12 @@ class TransactionView extends Component {
     this.setState({
       ...this.state,
       number: newNumber
-    })
+    });
+    const {form, initialize} = this.props;
+    initialize({
+      ...form.values,
+      amount: +newNumber
+    });
   };
 
   onDeleteNumber = () => {
@@ -95,6 +153,11 @@ class TransactionView extends Component {
       ...this.state,
       number: newNumber
     });
+    const {form, initialize} = this.props;
+    initialize({
+      ...form.values,
+      amount: +newNumber
+    });
   };
 
   clear = () => {
@@ -102,9 +165,44 @@ class TransactionView extends Component {
       ...this.state,
       number: 0
     });
+    const {form, initialize} = this.props;
+    initialize({
+      ...form.values,
+      amount: 0
+    });
   };
 
+  /*
+   <TouchableOpacity
+   style={[styles.transactionTypeBtn, type === 3 ?  selectedTypeStyle : defaultTypeStyle]}
+   onPress={() => this.changeType(3)}
+   >
+   <Text style={styles.btnText}>TRANSFER</Text>
+   </TouchableOpacity>
+   */
+
+  /*
+   <View style={styles.actions}>
+   <View style={styles.row}>
+   <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>&divide;</Text></TouchableOpacity>
+   </View>
+   <View style={styles.row}>
+   <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>&times;</Text></TouchableOpacity>
+   </View>
+   <View style={styles.row}>
+   <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>-</Text></TouchableOpacity>
+   </View>
+   <View style={styles.row}>
+   <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>+</Text></TouchableOpacity>
+   </View>
+   <View style={styles.row}>
+   <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>=</Text></TouchableOpacity>
+   </View>
+   </View>
+   */
+
   render() {
+    console.log(this.props);
     const {type} = this.state;
 
     const theme = AppStore.getState().theme;
@@ -113,7 +211,16 @@ class TransactionView extends Component {
     const selectedTypeStyle = {backgroundColor: COLOR[theme + '600'].color, borderWidth: 1, borderColor: borderColor};
     const defaultTypeStyle = {borderWidth: 1, borderColor: borderColor};
     const defaultBackground = {backgroundColor: COLOR[theme + '500'].color};
+    const {categories, accounts} = this.props;
 
+    /*
+     <Text style={styles.categoryLabel}>Category</Text>
+     <Text style={styles.categoryText}>HOUSING</Text>
+     */
+    /*
+     <Text style={styles.accountLabel}>Account</Text>
+     <Text style={styles.accountText}>CASH</Text>
+     */
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -135,12 +242,6 @@ class TransactionView extends Component {
               >
                 <Text style={styles.btnText}>EXPENSE</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.transactionTypeBtn, type === 3 ?  selectedTypeStyle : defaultTypeStyle]}
-                onPress={() => this.changeType(3)}
-              >
-                <Text style={styles.btnText}>TRANSFER</Text>
-              </TouchableOpacity>
             </View>
             <Separator color={borderColor} />
             <View style={[styles.amountBlock, defaultBackground]}>
@@ -158,14 +259,42 @@ class TransactionView extends Component {
               <TouchableOpacity
                 style={styles.account}
               >
-                <Text style={styles.accountLabel}>Account</Text>
-                <Text style={styles.accountText}>CASH</Text>
+                <Field
+                  name='accountId'
+                  component={Picker}
+                  options={accounts}
+                  labelField='name'
+                  valueField='id'
+                  label="Account"
+                  style={{
+                    color: '#fff',
+                    width: 100,
+                  }}
+                  labelStyle={{
+                    opacity: 0.5,
+                    color: '#fff',
+                  }}
+                />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.category}
+                style={[styles.category]}
               >
-                <Text style={styles.categoryLabel}>Category</Text>
-                <Text style={styles.categoryText}>HOUSING</Text>
+                <Field
+                  name='categoryId'
+                  component={Picker}
+                  options={categories}
+                  labelField='name'
+                  valueField='id'
+                  label="Category"
+                  style={{
+                    color: '#fff',
+                    width: 100
+                  }}
+                  labelStyle={{
+                    opacity: 0.5,
+                    color: '#fff'
+                  }}
+                />
               </TouchableOpacity>
             </View>
             <Separator color={borderColor} />
@@ -190,23 +319,6 @@ class TransactionView extends Component {
                   <TouchableOpacity style={styles.cell} onPress={() => this.onPressNumber('.')}><Text style={styles.numberButtonText}>.</Text></TouchableOpacity>
                   <TouchableOpacity style={styles.cell} onPress={() => this.onPressNumber('0')}><Text style={styles.numberButtonText}>0</Text></TouchableOpacity>
                   <TouchableOpacity style={styles.cell} onPress={() => this.onDeleteNumber()} onLongPress={() => this.clear()}><Text style={styles.numberButtonText}>&larr;</Text></TouchableOpacity>
-                </View>
-              </View>
-              <View style={styles.actions}>
-                <View style={styles.row}>
-                  <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>&divide;</Text></TouchableOpacity>
-                </View>
-                <View style={styles.row}>
-                  <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>&times;</Text></TouchableOpacity>
-                </View>
-                <View style={styles.row}>
-                  <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>-</Text></TouchableOpacity>
-                </View>
-                <View style={styles.row}>
-                  <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>+</Text></TouchableOpacity>
-                </View>
-                <View style={styles.row}>
-                  <TouchableOpacity style={styles.actionCell}><Text style={styles.actionButtonText}>=</Text></TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -304,7 +416,7 @@ const styles = StyleSheet.create({
     fontFamily: 'sans-serif'
   },
   accountBlock: {
-    height: 50,
+    height: 80,
     flexDirection: 'row'
   },
   account: {

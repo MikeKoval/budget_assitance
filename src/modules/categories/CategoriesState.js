@@ -14,9 +14,9 @@ export async function getAllResponse(items) {
   };
 }
 
-export async function getAll() {
+export async function getAll(type = null) {
   try {
-    return getAllResponse(await CategoriesService.list());
+    return getAllResponse(await CategoriesService.list(type));
   } catch (error) {
     // return fetchDataErrorOptimistic(error);
   }

@@ -14,9 +14,9 @@ export async function getAllResponse(items) {
   };
 }
 
-export async function getAll() {
+export async function getAll(accountId = null) {
   try {
-    return getAllResponse(await TransactionsService.list());
+    return getAllResponse(await TransactionsService.list(accountId));
   } catch (error) {
     // return fetchDataErrorOptimistic(error);
   }

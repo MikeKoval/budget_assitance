@@ -1,4 +1,8 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
+import {getAll} from './TransactionsState';
+import {getAll as getAllAccounts} from '../accounts/AccountsState';
+
 import {
   Text,
   View,
@@ -12,25 +16,63 @@ import ActionButton from 'react-native-action-button';
 import AppStore from '../../stores/AppStore';
 import {COLOR} from 'react-native-material-design';
 import Row from './TransactionsViewRow';
+import Separator from '../../components/Separator';
+import Picker from '../../components/Picker';
+import {Field, reduxForm} from 'redux-form';
 
-export default React.createClass({
-  propTypes: {
+const ds = new ListView.DataSource({
+  rowHasChanged: (r1, r2) => r1 != r2
+});
+
+@reduxForm({
+  form: 'transactionsForm'
+})
+@connect(
+  state => ({
+    loaded: state.transactions.loaded,
+    items: state.transactions.items,
+    dataSource: ds.cloneWithRows(state.transactions.items),
+    accounts: [{id: 0, name: 'All accounts'}].concat(state.accounts.items),
+    form: state.form.transactionsForm
+  }),
+  dispatch => ({
+    getAll(accountId = null) {
+      dispatch(getAll(accountId));
+    },
+    getAllAccounts() {
+      dispatch(getAllAccounts());
+    }
+  })
+)
+export default class TransactionsView extends Component {
+  static propTypes = {
     loaded: PropTypes.bool.isRequired,
     dataSource: PropTypes.object,
-
+    accounts: PropTypes.array,
     getAll: PropTypes.func.isRequired
-  },
+  };
 
-  contextTypes: {
+  static contextTypes = {
     navigator: PropTypes.object
-  },
+  };
+
+  state = {
+    account: null
+  };
 
   componentWillMount() {
     this.props.getAll();
-  },
+  };
+
+  changeAccount = (account) => {
+    this.setState({
+      account
+    });
+    this.props.getAll(account);
+  };
 
   render() {
-    const {loaded, dataSource} = this.props;
+    const {loaded, dataSource, accounts} = this.props;
     const {navigator} = this.context;
 
     const theme = AppStore.getState().theme;
@@ -53,6 +95,16 @@ export default React.createClass({
 
     return (
       <View style={styles.container}>
+        <Field
+          name='accountId'
+          component={Picker}
+          options={accounts}
+          labelField='name'
+          valueField='id'
+          label="Account"
+          onBeforeChange={this.changeAccount}
+        />
+        <Separator />
         <ListView
           style={styles.container}
           dataSource={dataSource}
@@ -62,11 +114,11 @@ export default React.createClass({
           enableEmptySections={true}
           refreshControl={refreshControl}
         />
-        <ActionButton buttonColor={COLOR[`${theme}500`].color} onPress={() => navigator.forward()} />
+        <ActionButton buttonColor={COLOR[`${theme}500`].color} onPress={() => navigator.forward('addTransaction', 'Add transaction', {acountId: this.state.accountId})} />
       </View>
     );
   }
-});
+}
 
 const styles = StyleSheet.create({
   container: {

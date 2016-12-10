@@ -5,11 +5,10 @@ import {
   Text,
   View,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Separator from '../../components/Separator';
 import {COLOR} from 'react-native-material-design';
+import moment from 'moment';
 
-const ICON_SIZE = 16;
 const INCOME_ICON_COLOR = COLOR.paperGreen500.color;
 const EXPENSE_ICON_COLOR = COLOR.paperRed500.color;
 
@@ -30,7 +29,7 @@ const ListRow = React.createClass({
   renderTitle() {
     return (
       <Text style={styles.title}>
-        {this.props.item.name}
+        {this.props.item.note}
       </Text>
     );
   },
@@ -43,14 +42,20 @@ const ListRow = React.createClass({
           style={styles.itemButton}
         >
           <View style={styles.flexDirectionRow}>
-            <View style={[styles.container, styles.flexDirectionRow, {marginRight: 4}]}>
-              {this.renderTitle()}
+            <View style={[styles.container, styles.flexDirectionColumn, {marginRight: 4}]}>
+              <View><Text style={styles.category}>{item.category}</Text></View>
+              <View>{this.renderTitle()}</View>
+              <View><Text>{item.account}</Text></View>
             </View>
-            <View style={styles.menuRightIconContainer}>
-              {item.type === 2 ?
-                <Icon name={'add'} size={ICON_SIZE} color={INCOME_ICON_COLOR} /> :
-                <Icon name={'remove'} size={ICON_SIZE} color={EXPENSE_ICON_COLOR} />
-              }
+            <View style={styles.flexDirectionColumn}>
+              <Text style={styles.date}>{item.created && moment(item.created).format('DD/MM/YYYY')}</Text>
+              <View>
+                <Text style={[styles.amount, item.type === 1 ? {color: EXPENSE_ICON_COLOR} : (item.type === 2 ? {color: INCOME_ICON_COLOR} : '')]}>
+                  {item.type === 1 ? '-' : (item.type === 2 ? '+' : '')}&nbsp;
+                  {item.currency}&nbsp;
+                  {item.amount}&nbsp;
+                  </Text>
+              </View>
             </View>
           </View>
         </TouchableOpacity>
@@ -70,22 +75,44 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   flexDirectionRow: {
-    flexDirection: 'row'
+    height: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  flexDirectionColumn: {
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
   menuRightIconContainer: {
-    height: 24,
     justifyContent: 'center',
     paddingRight: 4
   },
   itemButton: {
-    height: 25,
+    // height: 25,
     backgroundColor: 'white',
     flex: 1,
     justifyContent: 'center'
   },
   title: {
-    color: 'black',
-    fontWeight: 'bold'
+
+  },
+  expense: {
+    color: 'red'
+  },
+  income: {
+    color: 'green'
+  },
+  amount: {
+    fontSize: 20,
+    textAlign: 'right'
+  },
+  date: {
+    textAlign: 'right'
+  },
+  category: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black'
   }
 });
 
