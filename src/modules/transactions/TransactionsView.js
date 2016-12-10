@@ -61,7 +61,14 @@ export default class TransactionsView extends Component {
   };
 
   componentWillMount() {
-    this.props.getAll();
+    const {getAll, accountId, initialize} = this.props;
+    getAll(accountId);
+    this.setState({
+      account: accountId
+    });
+    initialize({
+      accountId
+    })
   };
 
   changeAccount = (account) => {
@@ -89,7 +96,7 @@ export default class TransactionsView extends Component {
       <RefreshControl
         refreshing={!this.props.loaded}
         enabled={this.props.loaded}
-        onRefresh={this.props.getAll}
+        onRefresh={() => this.props.getAll(this.state.account)}
       />
     );
 

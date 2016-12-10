@@ -27,7 +27,7 @@ class TextField extends Component {
         {label && <Text style={(touched && error) ? [styles.label, {color: 'red'}] : styles.label}>{label}</Text>}
         <TextInput
           // Let's only change the text color instead of showing error messages
-          style={(touched && error) ? [style, styles.textInput, {color: 'red'}] : [styles.textInput, style]}
+          style={(touched && error) ? [style, styles.textInput] : [styles.textInput, style]}
           onChangeText={(value) => onChange(value)}
           value={value}
           {...otherProps}

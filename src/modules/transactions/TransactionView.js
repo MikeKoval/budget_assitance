@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import {insert} from './TransactionState';
+import {insert, getById, update, remove} from './TransactionState';
 import {getAll} from './TransactionsState';
 import {getAll as getAllAccounts} from '../accounts/AccountsState';
 import {getAll as getAllCategories} from '../categories/CategoriesState';
@@ -9,7 +9,8 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Text
+  Text,
+  Alert
 } from 'react-native';
 import {Field, reduxForm} from 'redux-form';
 import {COLOR} from 'react-native-material-design';
@@ -31,13 +32,17 @@ import Picker from '../../components/Picker';
   state => ({
     loading: state.transaction.loading,
     error: state.transaction.error,
+    item: state.transaction.item,
     accounts: state.accounts.items,
     categories: state.categories.items,
-    form: state.form.transactionForm,
+    form: state.form.transactionForm
   }),
   dispatch => ({
     insert(item) {
       return dispatch(insert(item));
+    },
+    update(item) {
+      return dispatch(update(item));
     },
     getAll() {
       dispatch(getAll());
@@ -47,6 +52,12 @@ import Picker from '../../components/Picker';
     },
     getAllCategories(type = null) {
       return dispatch(getAllCategories(type));
+    },
+    getById(id) {
+      return dispatch(getById(id));
+    },
+    remove(id) {
+      return dispatch(remove(id));
     }
   })
 )
@@ -58,7 +69,8 @@ class TransactionView extends Component {
     getAllCategories: PropTypes.func.isRequired,
     getAllAccounts: PropTypes.func.isRequired,
     accounts: PropTypes.array.isRequired,
-    categories: PropTypes.array.isRequired,
+    categories: PropTypes.array.isRequired
+    // item: PropTypes.object
   };
 
   state = {
@@ -72,33 +84,81 @@ class TransactionView extends Component {
 
   componentWillMount() {
     const {navigator} = this.context;
-    const {handleSubmit, getAllCategories, getAllAccounts, initialize, accountId} = this.props;
-    getAllCategories(this.state.type)
-      .then(() => getAllAccounts())
-      .then(() => {
-        initialize({
-          type: 1,
-          categoryId: this.props.categories[0].id,
-          accountId: accountId || this.props.accounts[0].id,
-        });
+    const {handleSubmit, getAllCategories, getAllAccounts, initialize, accountId, id, getById} = this.props;
+
+    const _this = this;
+    const getCategoriesPromise = async function () {
+      return getAllCategories(_this.state.type)
+        .then(() => getAllAccounts())
+        .then(() =>
+          initialize({
+            ...(_this.props.form && _this.props.form.values || {}),
+            type: _this.state.type,
+            categoryId: (_this.props.item && _this.props.item.categoryId) || _this.props.categories[0].id,
+            accountId: (_this.props.item && _this.props.item.accountId) || accountId || _this.props.accounts[0].id,
+          })
+        );
+    };
+
+    if (id) {
+      getById(id)
+        .then(() => {
+          initialize({
+            ...this.props.item
+          });
+          this.setState({
+            type: this.props.item.type,
+            number: this.props.item.amount + ''
+          })
+        })
+        .then(() => getCategoriesPromise());
+    }
+    else {
+      getCategoriesPromise();
+    }
+
+    if (id) {
+      navigator.actions.push({
+        icon: 'delete',
+        onPress: () => this.remove(id)
       });
-    navigator.actions = [
-      ...navigator.actions,
-      {
-        icon: 'done',
-        onPress: handleSubmit(this.onSubmit)
-      }
-    ];
+    }
+
+    navigator.actions.push({
+      icon: 'done',
+      onPress: handleSubmit(this.onSubmit)
+    });
   }
 
   componentWillUnmount() {
     _.remove(this.context.navigator.actions, {icon: 'done'});
+    _.remove(this.context.navigator.actions, {icon: 'delete'});
   }
 
-  onSubmit = (data) => {
-    const {insert, getAll} = this.props;
+  remove = (id) => {
+    const {remove, getAll} = this.props;
     const {navigator} = this.context;
-    return insert(data)
+    Alert.alert(
+      '',
+      'Do you really want to delete this item?',
+      [
+        {text: 'NO'},
+        {
+          text: 'YES',
+          onPress: () => remove(id)
+            .then(() => getAll())
+            .then(() => navigator.back())
+        }
+      ]
+    );
+  };
+
+  onSubmit = (data) => {
+    const {insert, getAll, update, id} = this.props;
+    const {navigator} = this.context;
+    const save = id ? update : insert;
+
+    return save(data)
       .then(() => getAll())
       .then(() => navigator.back())
   };
@@ -113,6 +173,7 @@ class TransactionView extends Component {
     getAllCategories(type)
       .then(() => {
         initialize({
+          ...form.values,
           type,
           categoryId: this.props.categories[0].id,
           accountId: (form && form.values && form.values.accountId) || accounts && accounts[0] && accounts[0].id
@@ -202,7 +263,6 @@ class TransactionView extends Component {
    */
 
   render() {
-    console.log(this.props);
     const {type} = this.state;
 
     const theme = AppStore.getState().theme;
@@ -211,16 +271,16 @@ class TransactionView extends Component {
     const selectedTypeStyle = {backgroundColor: COLOR[theme + '600'].color, borderWidth: 1, borderColor: borderColor};
     const defaultTypeStyle = {borderWidth: 1, borderColor: borderColor};
     const defaultBackground = {backgroundColor: COLOR[theme + '500'].color};
-    const {categories, accounts} = this.props;
+    const {categories, accounts, id, loading} = this.props;
 
-    /*
-     <Text style={styles.categoryLabel}>Category</Text>
-     <Text style={styles.categoryText}>HOUSING</Text>
-     */
-    /*
-     <Text style={styles.accountLabel}>Account</Text>
-     <Text style={styles.accountText}>CASH</Text>
-     */
+    if (id  && loading) {
+      return (
+        <View>
+          <ActivityIndicator style={styles.centered}/>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container}>
         <ScrollableTabView

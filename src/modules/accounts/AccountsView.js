@@ -5,7 +5,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   ListView,
-  RefreshControl
+  RefreshControl,
+  TouchableOpacity
 } from 'react-native';
 import ActionButton from 'react-native-action-button';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
@@ -40,7 +41,7 @@ export default React.createClass({
       ...navigator.actions,
       {
         icon: 'edit',
-        onPress: () => this.edit(this.state.id)
+        onPress: () => this.edit(this.props.id)
       }
     ];
 
@@ -67,7 +68,7 @@ export default React.createClass({
     const {items, setSelectedId} = this.props;
     const item = items[i];
 
-    return setSelectedId(item.id);
+    setSelectedId(item.id);
 
     // console.log(items, i, item);
 
@@ -75,14 +76,10 @@ export default React.createClass({
   },
 
   render() {
-    const {loaded, items, id} = this.props;
+    const {loaded, items} = this.props;
     const {navigator} = this.context;
 
     const theme = AppStore.getState().theme;
-
-    let index = _.findIndex(items, {id});
-    index = index === -1 ? 0 : index;
-    console.log(index);
 
     if (!loaded) {
       return (
@@ -92,25 +89,32 @@ export default React.createClass({
       );
     }
 
+    let {id} = this.props;
+    let index = _.findIndex(items, {id});
+    index = index === -1 ? 0 : index;
+    id = items && items[index] && items[index].id;
+
     return (
       <View style={styles.container}>
-        <ScrollableTabView
+        {items && <ScrollableTabView
           tabBarActiveTextColor={COLOR[`${theme}500`].color}
           tabBarUnderlineStyle={{backgroundColor: COLOR[`${theme}500`].color}}
           onChangeTab={this.onChangeTab}
-          tab={index}
+          initialPage={index}
         >
           {items.map(item =>
             <View key={item.id} tabLabel={item.name} style={styles.container}>
               <Card>
                 <Card.Body>
                   <Subheader text="Balance" color="#444" />
-                  <Text style={[styles.accountAmountText, {color: COLOR[theme + '500'].color}]}>{item.currency} {item.amount}</Text>
+                  <TouchableOpacity onPress={() => navigator.to('transactions', 'Transactions', {accountId: id})}>
+                    <Text style={[styles.accountAmountText, {color: COLOR[theme + '500'].color}]}>{item.currency} {item.amount}</Text>
+                  </TouchableOpacity>
                 </Card.Body>
               </Card>
             </View>
           )}
-        </ScrollableTabView>
+        </ScrollableTabView>}
         <ActionButton buttonColor={COLOR[`${theme}500`].color}>
           <ActionButton.Item buttonColor={COLOR[`paperPink800`].color} title="New account" onPress={() => navigator.forward('addAccount')}>
             <Icon name="md-create" style={styles.actionButtonIcon} />

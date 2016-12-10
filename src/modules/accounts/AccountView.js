@@ -40,7 +40,7 @@ class AccountView extends Component {
     const {id, getById, initialize, getCurrencies, handleSubmit, items} = this.props;
     const {navigator} = this.context;
 
-    if (items.length > 1) {
+    if (id && items.length > 1) {
       navigator.actions.push({
         icon: 'delete',
         onPress: () => this.remove(id)
@@ -93,7 +93,7 @@ class AccountView extends Component {
   };
 
   remove = (id) => {
-    const {remove, getAll} = this.props;
+    const {remove, getAll, setSelectedId} = this.props;
     const {navigator} = this.context;
     Alert.alert(
       '',
@@ -104,14 +104,25 @@ class AccountView extends Component {
           text: 'YES',
           onPress: () => remove(id)
             .then(() => getAll())
-            .then(() => navigator.back())
+            .then(() => setSelectedId(null))
+            .then(() => {
+              const current = navigator.navigator.getCurrentRoutes()[0].path;
+              const path = current.substr(0, current.lastIndexOf('.'));
+              const obj = navigator._getRouteObject(path);
+
+              if (obj) {
+                return navigator.back();
+              }
+              else {
+                navigator.to('accounts');
+              }
+            })
         }
       ]
     );
   };
 
   render() {
-    console.log(this.context);
     const {currencies, id, loading} = this.props;
 
     if (id  && loading) {

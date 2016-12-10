@@ -1,7 +1,7 @@
 import {connect} from 'react-redux';
 import AccountView from './AccountView';
 import {insert, getCurrencies, update, getById, remove} from './AccountState';
-import {getAll} from './AccountsState';
+import {getAll, setSelectedId} from './AccountsState';
 
 export default connect(
   state => ({
@@ -29,6 +29,9 @@ export default connect(
     },
     getAll() {
       return dispatch(getAll());
+    },
+    setSelectedId(id) {
+      return dispatch(setSelectedId(id));
     }
   })
 )(AccountView);

@@ -55,7 +55,10 @@ export async function update(item) {
 
 export async function remove(id) {
   return db
-    .then(DB => DB.executeSql('DELETE FROM accounts WHERE id = ?', [id]))
+    .then(DB => {
+      return DB.executeSql('DELETE FROM accounts WHERE id = ?', [id])
+        .then(() => DB.executeSql('DELETE FROM transactions WHERE accountId = ?', [id]))
+    })
     .then(results => results[0].rows.raw())
     .then(results => results && results[0])
 }
