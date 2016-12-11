@@ -15,13 +15,15 @@ if (authenticationEnabled) {
     domain
   });
 } else {
-  console.warn('Authentication not enabled: Auth0 configuration not provided');
+  // console.warn('Authentication not enabled: Auth0 configuration not provided');
 }
 
 export function showLogin() {
+  console.log('showLogin1');
   if (!authenticationEnabled) {
     return;
   }
+  console.log('showLogin2');
 
   const options = {
     closable: true
