@@ -32,7 +32,7 @@ const ds = new ListView.DataSource({
     loaded: state.transactions.loaded,
     items: state.transactions.items,
     dataSource: ds.cloneWithRows(state.transactions.items),
-    accounts: [{id: 0, name: 'All accounts'}].concat(state.accounts.items),
+    accounts: [{_id: 0, name: 'All accounts'}].concat(state.accounts.items),
     form: state.form.transactionsForm
   }),
   dispatch => ({
@@ -57,28 +57,29 @@ export default class TransactionsView extends Component {
   };
 
   state = {
-    account: null
+    accountId: null
   };
 
   componentWillMount() {
     const {getAll, accountId, initialize} = this.props;
     getAll(accountId);
     this.setState({
-      account: accountId
+      accountId
     });
     initialize({
       accountId
     })
   };
 
-  changeAccount = (account) => {
+  changeAccount = (accountId) => {
     this.setState({
-      account
+      accountId
     });
-    this.props.getAll(account);
+    this.props.getAll(accountId);
   };
 
   render() {
+    console.log(this.props);
     const {loaded, dataSource, accounts} = this.props;
     const {navigator} = this.context;
 
@@ -96,7 +97,7 @@ export default class TransactionsView extends Component {
       <RefreshControl
         refreshing={!this.props.loaded}
         enabled={this.props.loaded}
-        onRefresh={() => this.props.getAll(this.state.account)}
+        onRefresh={() => this.props.getAll(this.state.accountId)}
       />
     );
 
@@ -107,7 +108,7 @@ export default class TransactionsView extends Component {
           component={Picker}
           options={accounts}
           labelField='name'
-          valueField='id'
+          valueField='_id'
           label="Account"
           onBeforeChange={this.changeAccount}
         />
@@ -121,7 +122,7 @@ export default class TransactionsView extends Component {
           enableEmptySections={true}
           refreshControl={refreshControl}
         />
-        <ActionButton buttonColor={COLOR[`${theme}500`].color} onPress={() => navigator.forward('addTransaction', 'Add transaction', {acountId: this.state.accountId})} />
+        <ActionButton buttonColor={COLOR[`${theme}500`].color} onPress={() => navigator.forward('addTransaction', 'Add transaction', {accountId: this.state.accountId})} />
       </View>
     );
   }

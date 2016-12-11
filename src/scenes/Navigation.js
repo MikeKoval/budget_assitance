@@ -1,8 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { View, Text, Image } from 'react-native';
+import {connect} from 'react-redux';
 
 import { Avatar, Drawer, Divider, COLOR, TYPO } from 'react-native-material-design';
 
+@connect(
+  state => ({
+      isLoggedIn: state.auth.isLoggedIn,
+      user: state.auth.currentUser
+  })
+)
 export default class Navigation extends Component {
 
     static contextTypes = {
@@ -29,13 +36,15 @@ export default class Navigation extends Component {
 
     render() {
         const { route } = this.state;
+        const {user} = this.props;
 
         return (
             <Drawer theme='light'>
                 <Drawer.Header image={<Image source={require('./../img/nav.jpg')} />}>
                     <View style={styles.header}>
-                        <Avatar size={80} image={<Image source={{ uri: "http://facebook.github.io/react-native/img/opengraph.png?2" }}/>} />
-                        <Text style={[styles.text, COLOR.paperGrey50, TYPO.paperFontSubhead]}>Budget assistant</Text>
+                        {user && user.picture && <Avatar size={80} image={<Image source={{ uri: user.picture }}/>} />}
+                        {!user || !user.name && <Text style={[styles.text, COLOR.paperGrey50, TYPO.paperFontSubhead]}>Budget assistant</Text>}
+                        {user && user.name && <Text style={[styles.text, COLOR.paperGrey50, TYPO.paperFontSubhead]}>{user.name}</Text>}
                     </View>
                 </Drawer.Header>
 

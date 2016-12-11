@@ -6,7 +6,7 @@ import {
   StyleSheet
 } from 'react-native';
 
-class TextField extends Component {
+class Pircker extends Component {
   static propTypes = {
     style: PropTypes.object,
     meta: PropTypes.object.isRequired,
@@ -66,4 +66,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default TextField;
+export default Pircker;

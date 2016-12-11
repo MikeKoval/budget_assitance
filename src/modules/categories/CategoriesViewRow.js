@@ -50,7 +50,7 @@ const ListRow = React.createClass({
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.itemButton}
-          onPress={() => this.edit(item.id)}
+          onPress={() => this.edit(item._id)}
         >
           <View style={styles.flexDirectionRow}>
             <View style={[styles.container, styles.flexDirectionRow, {marginRight: 4}]}>

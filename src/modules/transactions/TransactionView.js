@@ -94,8 +94,8 @@ class TransactionView extends Component {
           initialize({
             ...(_this.props.form && _this.props.form.values || {}),
             type: _this.state.type,
-            categoryId: (_this.props.item && _this.props.item.categoryId) || _this.props.categories[0].id,
-            accountId: (_this.props.item && _this.props.item.accountId) || accountId || _this.props.accounts[0].id,
+            categoryId: (_this.props.item && _this.props.item.categoryId) || _this.props.categories[0]._id,
+            accountId: (_this.props.item && _this.props.item.accountId) || accountId || _this.props.accounts[0]._id,
           })
         );
     };
@@ -175,8 +175,8 @@ class TransactionView extends Component {
         initialize({
           ...form.values,
           type,
-          categoryId: this.props.categories[0].id,
-          accountId: (form && form.values && form.values.accountId) || accounts && accounts[0] && accounts[0].id
+          categoryId: this.props.categories[0]._id,
+          accountId: (form && form.values && form.values.accountId) || accounts && accounts[0] && accounts[0]._id
         });
       })
   };
@@ -324,7 +324,7 @@ class TransactionView extends Component {
                   component={Picker}
                   options={accounts}
                   labelField='name'
-                  valueField='id'
+                  valueField='_id'
                   label="Account"
                   style={{
                     color: '#fff',
@@ -344,7 +344,7 @@ class TransactionView extends Component {
                   component={Picker}
                   options={categories}
                   labelField='name'
-                  valueField='id'
+                  valueField='_id'
                   label="Category"
                   style={{
                     color: '#fff',

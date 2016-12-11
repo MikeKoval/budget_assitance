@@ -75,6 +75,14 @@ class AppView extends Component {
   }
 
   render(){
+    if (!this.props.isReady) {
+      return (
+        <View style={styles.centered}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+
     const { drawer, navigator } = this.state;
     const navView = React.createElement(Navigation);
 

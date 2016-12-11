@@ -48,10 +48,10 @@ export default React.createClass({
     this.props.getAll()
       .then(() => {
         const {items, id, setSelectedId} = this.props;
-        const item = items[0];
+        const item = items && items[0];
 
-        if (!id) {
-          setSelectedId(item.id);
+        if (!id && item) {
+          setSelectedId(item._id);
         }
       })
   },
@@ -68,7 +68,7 @@ export default React.createClass({
     const {items, setSelectedId} = this.props;
     const item = items[i];
 
-    setSelectedId(item.id);
+    setSelectedId(item._id);
 
     // console.log(items, i, item);
 
@@ -81,7 +81,7 @@ export default React.createClass({
 
     const theme = AppStore.getState().theme;
 
-    if (!loaded) {
+    if (!loaded || !theme) {
       return (
         <View>
           <ActivityIndicator style={styles.centered}/>
@@ -90,9 +90,9 @@ export default React.createClass({
     }
 
     let {id} = this.props;
-    let index = _.findIndex(items, {id});
+    let index = _.findIndex(items, {_id: id});
     index = index === -1 ? 0 : index;
-    id = items && items[index] && items[index].id;
+    id = items && items[index] && items[index]._id;
 
     return (
       <View style={styles.container}>
@@ -103,7 +103,7 @@ export default React.createClass({
           initialPage={index}
         >
           {items.map(item =>
-            <View key={item.id} tabLabel={item.name} style={styles.container}>
+            <View key={item._id} tabLabel={item.name} style={styles.container}>
               <Card>
                 <Card.Body>
                   <Subheader text="Balance" color="#444" />

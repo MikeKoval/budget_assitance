@@ -19,11 +19,9 @@ if (authenticationEnabled) {
 }
 
 export function showLogin() {
-  console.log('showLogin1');
   if (!authenticationEnabled) {
     return;
   }
-  console.log('showLogin2');
 
   const options = {
     closable: true

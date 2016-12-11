@@ -14,7 +14,6 @@ import java.util.List;
 
 import com.auth0.lock.react.LockReactPackage;
 
-import org.pgsqlite.SQLitePluginPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import me.neo.react.StatusBarPackage;
 
@@ -31,7 +30,6 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
           new LockReactPackage(),
-          new SQLitePluginPackage(),
           new VectorIconsPackage(),
           new StatusBarPackage()
       );
