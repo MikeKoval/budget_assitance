@@ -1,36 +1,40 @@
 import db from '../utils/db';
 import _ from 'lodash';
+import {list as listAccounts} from './AccountsService';
+import {list as listCategories} from './CategoriesService';
 
 export async function list(accountId) {
   function map(doc) {
     if (doc.entityType === 'transaction') {
-      emit([doc.accountId, 'transaction'], doc);
-    }
-    if (doc.entityType === 'account') {
-      emit([doc._id, 'account'], doc);
+      emit(doc.accountId, doc);
     }
   }
 
   const params = {include_docs : true};
   if (accountId) {
-    // params.startkey = [accountId];
-    // params.endkey = [accountId];
+    params.key = accountId;
   }
 
   return db
     .query(map, params)
-    .then(results => {
-      return results.rows.map(row => row.doc);
-    })
-    .then(results =>
-      _.filter(_.map(results, item => {
-        if (item.entityType === 'transaction') {
-          const account = _.find(results, {_id: item.accountId});
-          item.account = account && account.name;
-        }
-
-        return item;
-      }), item => item.entityType === 'transaction')
+    .then(results => results.rows.map(row => row.doc))
+    .then(transactions =>
+      listAccounts()
+        .then(accounts =>
+          _.map(transactions, item => {
+            item.account = _.find(accounts, {_id: item.accountId});
+            return item;
+          })
+        )
+        .then(transactions =>
+          listCategories()
+            .then(categories =>
+              _.map(transactions, item => {
+                item.category = _.find(categories, {_id: item.categoryId});
+                return item;
+              })
+            )
+        )
     );
   // return db
   //   .then(DB => DB.executeSql(`

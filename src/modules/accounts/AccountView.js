@@ -154,7 +154,7 @@ class AccountView extends Component {
               component={Picker}
               options={currencies}
               labelField='shortName'
-              valueField='id'
+              valueField='shortName'
               label="Currency"
             />
           </Card.Body>

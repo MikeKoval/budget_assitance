@@ -3,6 +3,7 @@ import {insert, getById, update, remove} from './TransactionState';
 import {getAll} from './TransactionsState';
 import {getAll as getAllAccounts} from '../accounts/AccountsState';
 import {getAll as getAllCategories} from '../categories/CategoriesState';
+import moment from 'moment';
 
 import React, {PropTypes, Component} from 'react';
 import {
@@ -158,6 +159,7 @@ class TransactionView extends Component {
     const {navigator} = this.context;
     const save = id ? update : insert;
 
+    data.created = data.created || moment().format('YYYY-MM-DD HH:mm');
     return save(data)
       .then(() => getAll())
       .then(() => navigator.back())
@@ -271,7 +273,7 @@ class TransactionView extends Component {
     const selectedTypeStyle = {backgroundColor: COLOR[theme + '600'].color, borderWidth: 1, borderColor: borderColor};
     const defaultTypeStyle = {borderWidth: 1, borderColor: borderColor};
     const defaultBackground = {backgroundColor: COLOR[theme + '500'].color};
-    const {categories, accounts, id, loading} = this.props;
+    const {categories, accounts, id, loading, form} = this.props;
 
     if (id  && loading) {
       return (
@@ -280,6 +282,10 @@ class TransactionView extends Component {
         </View>
       );
     }
+
+    const selectedAccountId = form && form.values && form.values.accountId;
+    const selectedAccount = _.find(accounts, {_id: selectedAccountId});
+    const currency = selectedAccount && selectedAccount.currencyId;
 
     return (
       <View style={styles.container}>
@@ -312,7 +318,7 @@ class TransactionView extends Component {
                 <Text style={styles.amountText}>{this.state.number}</Text>
               </View>
               <View style={styles.currency}>
-                <Text style={styles.currencyText}>UAH</Text>
+                <Text style={styles.currencyText}>{currency}</Text>
               </View>
             </View>
             <View style={[styles.accountBlock, defaultBackground]}>

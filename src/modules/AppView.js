@@ -7,6 +7,7 @@ import store from '../redux/store';
 import Navigate from '../utils/Navigate';
 import Toolbar from '../components/Toolbar';
 import Navigation from '../scenes/Navigation';
+import { AsyncStorage }  from 'react-native';
 
 class AppView extends Component {
   static propTypes = {
@@ -69,7 +70,13 @@ class AppView extends Component {
   componentWillReceiveProps({isReady, isLoggedIn}) {
     if (!this.props.isReady) {
       if (isReady && !isLoggedIn) {
-        auth0.showLogin();
+        AsyncStorage.getItem('user')
+          .then(user => {
+            console.log(user);
+            if (!user) {
+              // auth0.showLogin();
+            }
+          });
       }
     }
   }

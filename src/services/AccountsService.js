@@ -1,15 +1,44 @@
 import db from '../utils/db';
+import _ from 'lodash';
 
 export async function list() {
-  function map(doc) {
-    // join artist data to albums
-    if (doc.entityType === 'account') {
-      emit(doc);
-    }
-  }
-
-  return db.query(map, {include_docs : true})
-    .then(results => results.rows.map(row => row.doc));
+  return db.query(
+    (doc) => {
+      if (doc.entityType === 'account') {
+        emit(doc);
+      }
+    },
+    {include_docs : true}
+    )
+    .then(results => results.rows.map(row => row.doc))
+    .then(accounts =>
+      db.query(
+        {
+          map: (doc) => {
+            if (doc.entityType === 'transaction') {
+              emit(doc.accountId, {amount: doc.amount, type: doc.type});
+            }
+          },
+          reduce: (keys, values) => {
+            return values.reduce(
+              (sum, n) => {
+                return n.type === 1 ? sum - n.amount : sum + n.amount
+              },
+              0
+            );
+          }
+        },
+        {group: true}
+      )
+        .then(results => {
+          return _.map(accounts, item => {
+            const amountObj =  _.find(results.rows, {key: item._id});
+            const transactions = +(amountObj && amountObj.value) || 0;
+            item.amount = transactions + +item.initialValue;
+            return item;
+          });
+        })
+    );
 
   // return db.allDocs({include_docs: true})
   //   .then(results => results.rows.map(row => row.doc));

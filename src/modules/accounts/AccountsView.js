@@ -68,7 +68,9 @@ export default React.createClass({
     const {items, setSelectedId} = this.props;
     const item = items[i];
 
-    setSelectedId(item._id);
+    if (item) {
+      setSelectedId(item._id);
+    }
 
     // console.log(items, i, item);
 
@@ -90,7 +92,7 @@ export default React.createClass({
     }
 
     let {id} = this.props;
-    let index = _.findIndex(items, {_id: id});
+    let index = items && _.findIndex(items, {_id: id});
     index = index === -1 ? 0 : index;
     id = items && items[index] && items[index]._id;
 
@@ -108,7 +110,7 @@ export default React.createClass({
                 <Card.Body>
                   <Subheader text="Balance" color="#444" />
                   <TouchableOpacity onPress={() => navigator.to('transactions', 'Transactions', {accountId: id})}>
-                    <Text style={[styles.accountAmountText, {color: COLOR[theme + '500'].color}]}>{item.currency} {item.amount}</Text>
+                    <Text style={[styles.accountAmountText, {color: COLOR[theme + '500'].color}]}>{item.currencyId} {item.amount}</Text>
                   </TouchableOpacity>
                 </Card.Body>
               </Card>

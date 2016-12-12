@@ -3,6 +3,7 @@ import * as UsersService from '../../services/UsersService';
 import * as env from '../../../env';
 import localDB from '../../utils/db';
 import PouchDB from 'pouchdb-react-native';
+import * as AccountsState from '../accounts/AccountsState';
 
 const syncStates = ['change', 'paused', 'active', 'denied', 'complete', 'error'];
 
@@ -32,53 +33,61 @@ export function onUserLoginSuccess(profile, token) {
     const accessToken = token.accessToken;
 
     dispatch(onUserLoginSuccessOptimistic(profile, token));
-    AsyncStorage.setItem('accessToken', accessToken);
-
     const auth0Id = profile.userId && profile.userId.replace('google-oauth2|', 'u');
 
-    UsersService.sync({
+    const user = {
       accessToken,
       auth0Id,
       name: profile.name,
       email: profile.email
-    })
+    };
+
+    AsyncStorage.setItem('accessToken', accessToken);
+    AsyncStorage.setItem('user', user);
+
+    // console.log(user);
+
+    const remoteDB = new PouchDB(env.REMOTE_DB_URL + auth0Id);
+    const sync = localDB.sync(remoteDB, {
+      live: true,
+      retry: true
+    });
+
+    syncStates.forEach(state => {
+      sync.on(state, () => setCurrentState(state));
+
+      function setCurrentState(state) {
+        // console.log('[Sync:' + state + ']');
+
+        // this.setState({
+        //   syncStatus: state
+        // });
+      }
+    });
+
+    localDB.changes({
+      live: true,
+      include_docs: true
+    }).on('change', handleChange)
+      // .on('complete', console.log.bind(console, '[Change:Complete]'))
+      // .on('error', console.log.bind(console, '[Change:Error]'));
+
+    function handleChange(change) {
+      // console.log('[Change:Change]', change);
+
+      var doc = change.doc;
+
+      if (!doc) {
+        return;
+      }
+    }
+
+    UsersService.sync(user)
       .then((response) => {
         console.log('----response', response);
-
-        const remoteDB = new PouchDB(env.REMOTE_DB_URL + auth0Id);
-        const sync = localDB.sync(remoteDB, {
-          live: true,
-          retry: true
-        });
-
-        syncStates.forEach(state => {
-          sync.on(state, () => setCurrentState(state));
-
-          function setCurrentState(state) {
-            console.log('[Sync:' + state + ']');
-
-            // this.setState({
-            //   syncStatus: state
-            // });
-          }
-        });
-
-        localDB.changes({
-          live: true,
-          include_docs: true
-        }).on('change', handleChange)
-          .on('complete', console.log.bind(console, '[Change:Complete]'))
-          .on('error', console.log.bind(console, '[Change:Error]'));
-
-        function handleChange(change) {
-          console.log('[Change:Change]', change);
-
-          var doc = change.doc;
-
-          if (!doc) {
-            return;
-          }
-        }
+      })
+      .then(() => {
+        dispatch(AccountsState.getAll());
       })
       .catch((error) => {
         console.log(error);

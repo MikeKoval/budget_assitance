@@ -79,7 +79,6 @@ export default class TransactionsView extends Component {
   };
 
   render() {
-    console.log(this.props);
     const {loaded, dataSource, accounts} = this.props;
     const {navigator} = this.context;
 
