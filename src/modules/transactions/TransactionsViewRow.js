@@ -53,16 +53,16 @@ const ListRow = React.createClass({
         >
           <View style={styles.flexDirectionRow}>
             <View style={[styles.container, styles.flexDirectionColumn, {marginRight: 4}]}>
-              <View><Text style={styles.category}>{item.category.name}</Text></View>
+              <View><Text style={styles.category}>{item.category && item.category.name}</Text></View>
               <View>{this.renderTitle()}</View>
-              <View><Text>{item.account.name}</Text></View>
+              <View><Text>{item.account && item.account.name}</Text></View>
             </View>
             <View style={styles.flexDirectionColumn}>
               <Text style={styles.date}>{item.created && moment(item.created).format('DD/MM/YYYY')}</Text>
               <View>
                 <Text style={[styles.amount, item.type === 1 ? {color: EXPENSE_ICON_COLOR} : (item.type === 2 ? {color: INCOME_ICON_COLOR} : '')]}>
                   {item.type === 1 ? '-' : (item.type === 2 ? '+' : '')}&nbsp;
-                  {item.account.currencyId}&nbsp;
+                  {item.account && item.account.currencyId}&nbsp;
                   {item.amount}&nbsp;
                   </Text>
               </View>

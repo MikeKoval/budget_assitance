@@ -54,26 +54,22 @@ export default class Navigation extends Component {
                         {
                             value: 'Dashboard',
                             active: !route || route === 'accounts',
-                            onPress: () => this.changeScene('accounts'),
-                            onLongPress: () => this.changeScene('accounts')
+                            onPress: () => this.changeScene('accounts')
                         },
                         {
                             value: 'Add account',
                             active: !route || route === 'addAccount',
-                            onPress: () => this.changeScene('addAccount'),
-                            onLongPress: () => this.changeScene('addAccount')
+                            onPress: () => this.changeScene('addAccount')
                         },
                         {
                             value: 'Transactions',
                             active: !route || route === 'transactions',
-                            onPress: () => this.changeScene('transactions'),
-                            onLongPress: () => this.changeScene('transactions')
+                            onPress: () => this.changeScene('transactions')
                         },
                         {
                             value: 'Categories',
                             active: !route || route === 'categories',
-                            onPress: () => this.changeScene('categories'),
-                            onLongPress: () => this.changeScene('categories')
+                            onPress: () => this.changeScene('categories')
                         }
                     ]}
                 />

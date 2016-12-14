@@ -1,5 +1,6 @@
 import db from '../utils/db';
 import _ from 'lodash';
+import TransactionsService from './TransactionsService';
 
 export async function list() {
   return db.query(
@@ -123,8 +124,20 @@ export async function update(item) {
 }
 
 export async function remove(id) {
+  function map(doc) {
+    if (doc.entityType === 'transaction') {
+      emit(doc.accountId, doc);
+    }
+  }
+
   return db.get(id).then(function(doc) {
-    return db.remove(doc);
+    return db.remove(doc)
+      .then(() => TransactionsService.list(id))
+      .then(transactions => _.map(item => {
+        item._deleted = true;
+        return item;
+      }))
+      .then(transactions => db.bulkDocs(transactions))
   });
   // return db
   //   .then(DB => DB.executeSql('DELETE FROM accounts WHERE id = ?', [id]))

@@ -72,9 +72,8 @@ class AppView extends Component {
       if (isReady && !isLoggedIn) {
         AsyncStorage.getItem('user')
           .then(user => {
-            console.log(user);
             if (!user) {
-              // auth0.showLogin();
+              auth0.showLogin();
             }
           });
       }

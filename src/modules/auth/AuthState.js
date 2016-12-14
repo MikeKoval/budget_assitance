@@ -43,7 +43,7 @@ export function onUserLoginSuccess(profile, token) {
     };
 
     AsyncStorage.setItem('accessToken', accessToken);
-    AsyncStorage.setItem('user', user);
+    AsyncStorage.setItem('user', JSON.stringify(user));
 
     // console.log(user);
 
